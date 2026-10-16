@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jujutsu Kaisen: Yuji's Path - Incremental Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #09090b;
+            --panel-bg: #121216;
+            --border-color: #27272a;
+            --ce-blue: #00d2ff;
+            --ce-glow: rgba(0, 210, 255, 0.4);
+            --sukuna-red: #ff2a5f;
+            --sukuna-glow: rgba(255, 42, 95, 0.4);
+            --gold: #f59e0b;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(0, 210, 255, 0.08) 0%, transparent 60%),
+                radial-gradient(circle at 50% 100%, rgba(255, 42, 95, 0.05) 0%, transparent 60%);
+        }
+
+        /* Top Bar - Player Stats */
+        header {
+            background: rgba(18, 18, 22, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        .user-profile {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: var(--ce-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .finger-count {
+            background: rgba(255, 42, 95, 0.15);
+            border: 1px solid var(--sukuna-red);
+            color: var(--sukuna-red);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 6px 10px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        /* Main Container & Tabs */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            position: relative;
+        }
+
+        .tab-content {
+            display: none;
+            height: 100%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- TRAINING TAB --- */
+        .strike-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 0;
+            position: relative;
+        }
+
+        .strike-btn {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #1a233a 0%, #0d111a 100%);
+            border: 3px solid var(--ce-blue);
+            box-shadow: 0 0 25px var(--ce-glow);
+            color: #fff;
+            font-size: 2.5rem;
+            cursor: pointer;
+            outline: none;
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .strike-btn:active {
+            transform: scale(0.92);
+            box-shadow: 0 0 40px var(--ce-blue);
+        }
+
+        .strike-hint {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        /* Upgrades Section */
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .upgrades-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .upgrade-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: border-color 0.2s ease;
+        }
+
+        .upgrade-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .upgrade-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .upgrade-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .upgrade-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .buy-btn {
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid var(--ce-blue);
+            color: var(--ce-blue);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .buy-btn:hover:not(:disabled) {
+            background: var(--ce-blue);
+            color: #000;
+            box-shadow: 0 0 10px var(--ce-glow);
+        }
+
+        .buy-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: #555;
+            color: #888;
+        }
+
+        /* --- COMBAT TAB --- */
+        .enemy-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .enemy-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #1e1e24;
+            border: 2px solid var(--sukuna-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            color: var(--sukuna-red);
+            box-shadow: 0 0 15px var(--sukuna-glow);
+        }
+
+        .hp-bar-container {
+            width: 100%;
+            height: 16px;
+            background: #1a1a20;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .hp-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff2a5f, #ff6b00);
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+
+        .hp-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-shadow: 0 0 4px #000;
+        }
+
+        .combat-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .attack-btn {
+            background: linear-gradient(135deg, #ff2a5f 0%, #a8002a 100%);
+            border: none;
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px var(--sukuna-glow);
+        }
+
+        .attack-btn:active {
+            transform: scale(0.97);
+        }
+
+        .auto-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        .auto-btn.active {
+            background: rgba(0, 210, 255, 0.15);
+            border-color: var(--ce-blue);
+            color: var(--ce-blue);
+        }
+
+        /* --- STORY TAB --- */
+        .story-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .story-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .story-card.completed {
+            border-color: var(--gold);
+            background: rgba(245, 158, 11, 0.03);
+        }
+
+        .story-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .story-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--gold);
+        }
+
+        .story-reward {
+            font-size: 0.75rem;
+            color: var(--ce-blue);
+        }
+
+        /* --- BOTTOM NAVIGATION BAR --- */
+        nav {
+            background: rgba(18, 18, 22, 0.98);
+            border-top: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            height: 60px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-family: inherit;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .nav-btn i {
+            font-size: 1.2rem;
+        }
+
+        .nav-btn.active {
+            color: var(--ce-blue);
+        }
+
+        /* Floating Damage Text */
+        .dmg-text {
+            position: absolute;
+            font-weight: 800;
+            font-size: 1.2rem;
+            pointer-events: none;
+            animation: floatUp 0.8s ease-out forwards;
+            z-index: 100;
+        }
+
+        .dmg-normal {
+            color: #fff;
+            text-shadow: 0 0 4px #000;
+        }
+
+        .dmg-critical {
+            color: #ff2a5f;
+            font-size: 1.6rem;
+            text-shadow: 0 0 8px var(--sukuna-red), 0 0 2px #fff;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-40px) scale(1.2); }
+        }
+
+        /* Black Flash Overlay Effect */
+        .black-flash-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #fff;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 999;
+        }
+
+        .flash-active {
+            animation: flashAnim 0.15s ease-out;
+        }
+
+        @keyframes flashAnim {
+            0% { opacity: 0.8; background: #000; }
+            50% { opacity: 1; background: #ff2a5f; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="flash-overlay" class="black-flash-overlay"></div>
+
+    <!-- Top Bar: Player Stats -->
+    <header>
+        <div class="user-profile">
+            <div class="user-title">
+                <i class="fa-solid fa-fist-raised"></i> Yuji Itadori
+            </div>
+            <div class="finger-count" id="finger-container">
+                <i class="fa-solid fa-joint"></i> Sukuna Fingers: <span id="finger-val">0</span>
+            </div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Cursed Energy</div>
+                <div class="stat-value" style="color: var(--ce-blue)" id="ce-val">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Physical Power</div>
+                <div class="stat-value" style="color: #38bdf8" id="power-val">1</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Soul Shards</div>
+                <div class="stat-value" style="color: var(--gold)" id="shards-val">0</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main>
+
+        <!-- 1. TRAINING TAB -->
+        <div id="tab-training" class="tab-content active">
+            <div class="strike-zone">
+                <button class="strike-btn" id="strike-btn">
+                    <i class="fa-solid fa-hand-fist"></i>
+                </button>
+                <div class="strike-hint">TAP TO TRAIN PHYSICAL BODY</div>
+            </div>
+
+            <div class="section-title">
+                <span>Body & Energy Upgrades</span>
+                <i class="fa-solid fa-bolt" style="color: var(--ce-blue);"></i>
+            </div>
+
+            <div class="upgrades-list">
+                <div class="upgrade-card">
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">Divergent Fist</div>
+                        <div class="upgrade-desc">+1 Base Physical Power</div>
+                    </div>
+                    <button class="buy-btn" id="buy-upg-1">Cost: 15 CE</button>
+                </div>
+
+                <div class="upgrade-card">
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">Gojo's Movie Training</div>
+                        <div class="upgrade-desc">Auto-generates +1 CE/sec</div>
+                    </div>
+                    <button class="buy-btn" id="buy-upg-2">Cost: 50 CE</button>
+                </div>
+
+                <div class="upgrade-card">
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">Zone Focus</div>
+                        <div class="upgrade-desc">+5% Black Flash Crit Chance</div>
+                    </div>
+                    <button class="buy-btn" id="buy-upg-3">Cost: 200 CE</button>
+                </div>
+            </div>
+
+            <div class="section-title" style="margin-top: 15px;">
+                <span>Vessel Prestige</span>
+                <i class="fa-solid fa-skull" style="color: var(--sukuna-red);"></i>
+            </div>
+            <div class="upgrade-card" style="border-color: rgba(255, 42, 95, 0.3);">
+                <div class="upgrade-info">
+                    <div class="upgrade-name" style="color: var(--sukuna-red);">Consume Sukuna Finger</div>
+                    <div class="upgrade-desc">Reset CE/Power to gain permanent boost multiplier.</div>
+                </div>
+                <button class="buy-btn" id="prestige-btn" style="border-color: var(--sukuna-red); color: var(--sukuna-red);">
+                    Requires 1,000 CE
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. COMBAT TAB -->
+        <div id="tab-combat" class="tab-content">
+            <div class="enemy-card">
+                <div class="enemy-avatar" id="enemy-icon">
+                    <i class="fa-solid fa-ghost"></i>
+                </div>
+                <div>
+                    <h3 id="enemy-name" style="font-family: 'Cinzel', serif;">Fly Head Curse</h3>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);" id="enemy-level">Level 1 Curse</div>
+                </div>
+
+                <div class="hp-bar-container">
+                    <div class="hp-bar-fill" id="hp-fill"></div>
+                    <div class="hp-text" id="hp-text">10 / 10 HP</div>
+                </div>
+
+                <div class="combat-controls">
+                    <button class="attack-btn" id="attack-btn"><i class="fa-solid fa-burst"></i> Strike</button>
+                    <button class="auto-btn" id="auto-attack-btn"><i class="fa-solid fa-robot"></i> Auto: OFF</button>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <span>Combat Spoils</span>
+                <i class="fa-solid fa-coins" style="color: var(--gold);"></i>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); background: var(--panel-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
+                Defeating curses yields <strong style="color:var(--ce-blue);">Cursed Energy</strong> and <strong style="color:var(--gold);">Soul Shards</strong>. Stronger curses spawn automatically as you defeat them!
+            </div>
+        </div>
+
+        <!-- 3. STORY TAB -->
+        <div id="tab-story" class="tab-content">
+            <div class="section-title">
+                <span>Jujutsu Chronicles</span>
+                <i class="fa-solid fa-book-bookmark" style="color: var(--gold);"></i>
+            </div>
+
+            <div class="story-list" id="story-list">
+                <!-- Story items rendered via JS -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav>
+        <button class="nav-btn" data-tab="tab-training">
+            <i class="fa-solid fa-dumbbell"></i>
+            <span>Training</span>
+        </button>
+        <button class="nav-btn active" data-tab="tab-combat">
+            <i class="fa-solid fa-khanda"></i>
+            <span>Combat</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-story">
+            <i class="fa-solid fa-scroll"></i>
+            <span>Story</span>
+        </button>
+    </nav>
+
+    <script>
+        // --- GAME STATE ---
+        const state = {
+            ce: 0,
+            power: 1,
+            shards: 0,
+            fingers: 0,
+            multiplier: 1,
+            critChance: 0.05, // 5% base Black Flash chance
+            autoCeRate: 0,
+
+            // Upgrades
+            upg1Level: 0,
+            upg2Level: 0,
+            upg3Level: 0,
+
+            // Current Enemy
+            enemyIndex: 0,
+            enemyHp: 10,
+            enemyMaxHp: 10,
+            autoCombat: false,
+
+            // Story Progression
+            storyChapter: 0
+        };
+
+        const enemies = [
+            { name: "Fly Head Curse", baseHp: 10, ceReward: 5, shardReward: 1, icon: "fa-ghost", lvl: 1 },
+            { name: "Rugby Field Curse", baseHp: 40, ceReward: 20, shardReward: 3, icon: "fa-spaghetti-monster-flying", lvl: 2 },
+            { name: "Detention Center Finger Bearer", baseHp: 150, ceReward: 75, shardReward: 10, icon: "fa-skull-crossbones", lvl: 3 },
+            { name: "Mahito (Unregistered Grade 1)", baseHp: 500, ceReward: 250, shardReward: 30, icon: "fa-mask", lvl: 4 },
+            { name: "Jogo (Disaster Curse)", baseHp: 1500, ceReward: 800, shardReward: 100, icon: "fa-fire", lvl: 5 }
+        ];
+
+        const storyChapters = [
+            { title: "Chapter 1: The Incarnation", reqFingers: 0, desc: "Swallow Sukuna's Finger at Sugisawa High to save Megumi.", done: false, reward: "+10% Power Boost" },
+            { title: "Chapter 2: Cursed Womb Must Die", reqFingers: 1, desc: "Face the Finger Bearer in the detention center.", done: false, reward: "Unlock Auto Attack Feature" },
+            { title: "Chapter 3: Kyoto Sister-School Event", reqFingers: 2, desc: "Master Black Flash alongside Aoi Todo.", done: false, reward: "+10% Black Flash Crit Chance" },
+            { title: "Chapter 4: The Shibuya Incident", reqFingers: 4, desc: "Endure absolute tragedy and push Yuji beyond his limits.", done: false, reward: "Double All CE Rewards" }
+        ];
+
+        // --- DOM ELEMENTS ---
+        const ceValEl = document.getElementById('ce-val');
+        const powerValEl = document.getElementById('power-val');
+        const shardsValEl = document.getElementById('shards-val');
+        const fingerValEl = document.getElementById('finger-val');
+
+        const strikeBtn = document.getElementById('strike-btn');
+        const buyUpg1Btn = document.getElementById('buy-upg-1');
+        const buyUpg2Btn = document.getElementById('buy-upg-2');
+        const buyUpg3Btn = document.getElementById('buy-upg-3');
+        const prestigeBtn = document.getElementById('prestige-btn');
+
+        const enemyNameEl = document.getElementById('enemy-name');
+        const enemyLevelEl = document.getElementById('enemy-level');
+        const enemyIconEl = document.getElementById('enemy-icon');
+        const hpFillEl = document.getElementById('hp-fill');
+        const hpTextEl = document.getElementById('hp-text');
+        const attackBtn = document.getElementById('attack-btn');
+        const autoAttackBtn = document.getElementById('auto-attack-btn');
+        const flashOverlay = document.getElementById('flash-overlay');
+
+        // --- TAB NAVIGATION ---
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // --- HELPER FUNCTIONS ---
+        function formatNum(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+            return Math.floor(num);
+        }
+
+        function createFloatingText(text, isCrit, event) {
+            const el = document.createElement('div');
+            el.className = `dmg-text ${isCrit ? 'dmg-critical' : 'dmg-normal'}`;
+            el.innerText = text;
+
+            const x = event ? event.clientX : window.innerWidth / 2;
+            const y = event ? event.clientY : window.innerHeight / 2;
+
+            el.style.left = `${x - 20}px`;
+            el.style.top = `${y - 20}px`;
+
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 800);
+        }
+
+        function triggerBlackFlash() {
+            flashOverlay.classList.add('flash-active');
+            setTimeout(() => flashOverlay.classList.remove('flash-active'), 150);
+        }
+
+        // --- GAME LOGIC ---
+        function updateUI() {
+            ceValEl.innerText = formatNum(state.ce);
+            powerValEl.innerText = formatNum(state.power * state.multiplier);
+            shardsValEl.innerText = formatNum(state.shards);
+            fingerValEl.innerText = state.fingers;
+
+            // Upgrade Costs
+            const cost1 = Math.floor(15 * Math.pow(1.5, state.upg1Level));
+            const cost2 = Math.floor(50 * Math.pow(1.6, state.upg2Level));
+            const cost3 = Math.floor(200 * Math.pow(2.0, state.upg3Level));
+
+            buyUpg1Btn.innerText = `Cost: ${formatNum(cost1)} CE`;
+            buyUpg1Btn.disabled = state.ce < cost1;
+
+            buyUpg2Btn.innerText = `Cost: ${formatNum(cost2)} CE`;
+            buyUpg2Btn.disabled = state.ce < cost2;
+
+            buyUpg3Btn.innerText = `Cost: ${formatNum(cost3)} CE`;
+            buyUpg3Btn.disabled = state.ce < cost3;
+
+            const prestigeCost = 1000 * Math.pow(2.5, state.fingers);
+            prestigeBtn.innerText = state.ce >= prestigeCost ? `Consume (+1 Finger)` : `Req: ${formatNum(prestigeCost)} CE`;
+            prestigeBtn.disabled = state.ce < prestigeCost;
+
+            // Enemy UI
+            const curEnemy = enemies[state.enemyIndex];
+            enemyNameEl.innerText = curEnemy.name;
+            enemyLevelEl.innerText = `Level ${curEnemy.lvl} Curse`;
+            enemyIconEl.innerHTML = `<i class="fa-solid ${curEnemy.icon}"></i>`;
+
+            const hpPercent = Math.max(0, (state.enemyHp / state.enemyMaxHp) * 100);
+            hpFillEl.style.width = `${hpPercent}%`;
+            hpTextEl.innerText = `${formatNum(Math.max(0, state.enemyHp))} / ${formatNum(state.enemyMaxHp)} HP`;
+
+            renderStory();
+        }
+
+        // Training Strike Click
+        strikeBtn.addEventListener('click', (e) => {
+            const isCrit = Math.random() < state.critChance;
+            let gain = state.power * state.multiplier;
+
+            if (isCrit) {
+                gain *= 2.5; // Black Flash Multiplier
+                triggerBlackFlash();
+                createFloatingText(`BLACK FLASH! +${formatNum(gain)}`, true, e);
+            } else {
+                createFloatingText(`+${formatNum(gain)}`, false, e);
+            }
+
+            state.ce += gain;
+            updateUI();
+        });
+
+        // Buy Upgrades
+        buyUpg1Btn.addEventListener('click', () => {
+            const cost = Math.floor(15 * Math.pow(1.5, state.upg1Level));
+            if (state.ce >= cost) {
+                state.ce -= cost;
+                state.power += 1;
+                state.upg1Level++;
+                updateUI();
+            }
+        });
+
+        buyUpg2Btn.addEventListener('click', () => {
+            const cost = Math.floor(50 * Math.pow(1.6, state.upg2Level));
+            if (state.ce >= cost) {
+                state.ce -= cost;
+                state.autoCeRate += 1;
+                state.upg2Level++;
+                updateUI();
+            }
+        });
+
+        buyUpg3Btn.addEventListener('click', () => {
+            const cost = Math.floor(200 * Math.pow(2.0, state.upg3Level));
+            if (state.ce >= cost) {
+                state.ce -= cost;
+                state.critChance += 0.05;
+                state.upg3Level++;
+                updateUI();
+            }
+        });
+
+        // Prestige
+        prestigeBtn.addEventListener('click', () => {
+            const prestigeCost = 1000 * Math.pow(2.5, state.fingers);
+            if (state.ce >= prestigeCost) {
+                state.fingers++;
+                state.multiplier += 0.5; // +50% permanent boost per finger
+                state.ce = 0;
+                state.power = 1;
+                state.upg1Level = 0;
+                state.upg2Level = 0;
+                state.upg3Level = 0;
+                state.autoCeRate = 0;
+                updateUI();
+            }
+        });
+
+        // Combat Mechanics
+        function attackEnemy(e) {
+            const isCrit = Math.random() < state.critChance;
+            let dmg = state.power * state.multiplier;
+
+            if (isCrit) {
+                dmg *= 2.5;
+                triggerBlackFlash();
+                createFloatingText(`BLACK FLASH! ${formatNum(dmg)}`, true, e);
+            } else {
+                createFloatingText(`${formatNum(dmg)}`, false, e);
+            }
+
+            state.enemyHp -= dmg;
+
+            if (state.enemyHp <= 0) {
+                // Enemy Defeated
+                const curEnemy = enemies[state.enemyIndex];
+                state.ce += curEnemy.ceReward;
+                state.shards += curEnemy.shardReward;
+
+                // Move to next enemy or keep loop
+                if (state.enemyIndex < enemies.length - 1) {
+                    state.enemyIndex++;
+                }
+                
+                const nextEnemy = enemies[state.enemyIndex];
+                state.enemyMaxHp = nextEnemy.baseHp * (1 + state.enemyIndex * 0.5);
+                state.enemyHp = state.enemyMaxHp;
+            }
+
+            updateUI();
+        }
+
+        attackBtn.addEventListener('click', (e) => attackEnemy(e));
+
+        autoAttackBtn.addEventListener('click', () => {
+            state.autoCombat = !state.autoCombat;
+            autoAttackBtn.classList.toggle('active', state.autoCombat);
+            autoAttackBtn.innerHTML = state.autoCombat ? 
+                `<i class="fa-solid fa-robot"></i> Auto: ON` : 
+                `<i class="fa-solid fa-robot"></i> Auto: OFF`;
+        });
+
+        // Render Story
+        function renderStory() {
+            const container = document.getElementById('story-list');
+            container.innerHTML = '';
+
+            storyChapters.forEach((ch, idx) => {
+                const isUnlocked = state.fingers >= ch.reqFingers;
+                const card = document.createElement('div');
+                card.className = `story-card ${ch.done ? 'completed' : ''}`;
+
+                card.innerHTML = `
+                    <div class="story-header">
+                        <span class="story-title">${ch.title}</span>
+                        <span class="story-reward">${ch.reward}</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">${ch.desc}</div>
+                    <div style="margin-top: 6px;">
+                        ${ch.done ? 
+                            '<span style="color:var(--gold); font-size:0.8rem; font-weight:700;"><i class="fa-solid fa-circle-check"></i> Completed</span>' : 
+                            `<button class="buy-btn" onclick="claimStory(${idx})" ${!isUnlocked ? 'disabled' : ''}>
+                                ${isUnlocked ? 'Complete Chapter' : `Req: ${ch.reqFingers} Fingers`}
+                             </button>`
+                        }
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.claimStory = function(idx) {
+            const ch = storyChapters[idx];
+            if (!ch.done && state.fingers >= ch.reqFingers) {
+                ch.done = true;
+                if (idx === 0) state.multiplier += 0.1;
+                if (idx === 2) state.critChance += 0.1;
+                if (idx === 3) state.multiplier *= 2;
+                updateUI();
+            }
+        };
+
+        // Game Loops
+        setInterval(() => {
+            // Auto CE Generation
+            if (state.autoCeRate > 0) {
+                state.ce += state.autoCeRate * state.multiplier;
+            }
+
+            // Auto Combat Loop
+            if (state.autoCombat) {
+                attackEnemy(null);
+            }
+
+            updateUI();
+        }, 1000);
+
+        // Initial setup
+        state.enemyMaxHp = enemies[0].baseHp;
+        state.enemyHp = state.enemyMaxHp;
+        updateUI();
+    </script>
+</body>
+</html>
