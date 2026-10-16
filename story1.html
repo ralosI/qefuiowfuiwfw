@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 1: The Incarnation - Visual Novel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #050508;
+            color: #ffffff;
+            font-family: 'Rajdhani', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Visual Novel Main Stage */
+        .vn-container {
+            width: 100%;
+            max-width: 900px;
+            height: 100vh;
+            max-height: 600px;
+            background: radial-gradient(circle at center, #1a1a24 0%, #08080c 100%);
+            border: 2px solid #27272a;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+        }
+
+        /* Background Location Effects */
+        .vn-bg {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.25;
+            filter: blur(2px);
+            z-index: 1;
+        }
+
+        /* Character Sprite Box */
+        .sprite-container {
+            position: absolute;
+            bottom: 110px;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 75%;
+            z-index: 2;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
+
+        .character-sprite {
+            max-height: 100%;
+            max-width: 450px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px rgba(0,0,0,0.8));
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        /* Dialogue Box (Phoenix Wright style) */
+        .dialogue-box {
+            position: relative;
+            z-index: 10;
+            width: 92%;
+            margin: 0 auto 20px auto;
+            background: rgba(10, 12, 22, 0.92);
+            border: 2px solid #00d2ff;
+            border-radius: 8px;
+            padding: 22px 25px;
+            min-height: 120px;
+            box-shadow: 0 4px 25px rgba(0, 210, 255, 0.15);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Name Tag Banner */
+        .name-tag {
+            position: absolute;
+            top: -18px;
+            left: 20px;
+            background: linear-gradient(90deg, #00d2ff 0%, #0072ff 100%);
+            color: #000;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 4px 18px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 10px rgba(0, 210, 255, 0.4);
+        }
+
+        /* Dialogue Text */
+        .dialogue-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.5;
+            color: #f4f4f5;
+            margin-top: 5px;
+        }
+
+        /* Next Pointer Prompt */
+        .next-prompt {
+            align-self: flex-end;
+            font-size: 0.85rem;
+            color: #00d2ff;
+            animation: bounce 0.8s infinite alternate;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(5px); }
+        }
+
+        /* Return Button Top-Right */
+        .back-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 20;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #3f3f46;
+            color: #a1a1aa;
+            padding: 8px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            color: #fff;
+            border-color: #00d2ff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="vn-container">
+        <a href="index.html" class="back-btn"><i class="fa-solid fa-xmark"></i> Exit Story</a>
+
+        <div class="vn-bg"></div>
+
+        <!-- Character Sprite Display -->
+        <div class="sprite-container">
+            <img id="char-sprite" class="character-sprite" src="" alt="Character">
+        </div>
+
+        <!-- Dialogue UI Box -->
+        <div class="dialogue-box" id="dialogue-box">
+            <div class="name-tag" id="name-tag">NAME</div>
+            <div class="dialogue-text" id="dialogue-text">...</div>
+            <div class="next-prompt">
+                <span>CLICK / TAP TO CONTINUE</span>
+                <i class="fa-solid fa-caret-down"></i>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Character Image Assets provided
+        const IMAGES = {
+            yuji_normal: "https://static.wikia.nocookie.net/deathbattlefanon/images/9/9d/Yuji_Itadori_28Anime_2_29.png/revision/latest?cb=20220816213413",
+            yuji_serious: "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/b4bba41e-2420-42ec-8c4f-95844dd273dc/dhhtzvo-cb3e8f59-6ba0-4875-8f94-59d8a2f02100.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi9iNGJiYTQxZS0yNDIwLTQyZWMtOGM0Zi05NTg0NGRkMjczZGMvZGhodHp2by1jYjNlOGY1OS02YmEwLTQ4Tent2M2I2OC5wbmcifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdfQ.GnF0diEuFMa_lO4fYmI0WpEe_WqvbH9ucT6Xuz-hBF8",
+            megumi_normal: "https://i.redd.it/irbla1eyzpjc1.png",
+            megumi_serious: "https://i.namu.wiki/i/faGt6W5lJzCGV_1Vubiy8bPvYJWHGOuysNKlAU1lq3OPkiKvzDRN9KxmhS98M7UOtCNIkSr8UvpCrEq5TFoRYw.webp",
+            gojo: "https://static.wikia.nocookie.net/jujutsu-kaisen/images/e/ef/Satoru_Gojo_%28Anime_2%29.png/revision/latest?cb=20250726003655",
+            sukuna: "https://static.wikia.nocookie.net/vsbattles/images/4/41/Yuuji_7.png/revision/latest/scale-to-width-down/200?cb=20251011220423"
+        };
+
+        // Story Script for Chapter 1
+        const script = [
+            { speaker: "Yuji Itadori", sprite: IMAGES.yuji_normal, text: "Ah, Sugisawa High at night is pretty creepy... but I gotta find my seniors' occult club stuff." },
+            { speaker: "Megumi Fushiguro", sprite: IMAGES.megumi_serious, text: "Hey! You there. Stop right where you are!" },
+            { speaker: "Yuji Itadori", sprite: IMAGES.yuji_normal, text: "Huh? Who are you? A student from another school?" },
+            { speaker: "Megumi Fushiguro", sprite: IMAGES.megumi_normal, text: "I'm Megumi Fushiguro from Tokyo Jujutsu High. The wooden box in your club room... where is the talisman inside it?" },
+            { speaker: "Yuji Itadori", sprite: IMAGES.yuji_normal, text: "Oh, that finger looking thing? My upperclassmen took it! They said they were gonna peel off the seal tonight." },
+            { speaker: "Megumi Fushiguro", sprite: IMAGES.megumi_serious, text: "WHAT?! Are they insane?! That's a Special Grade cursed object! They're going to die!" },
+            { speaker: "Yuji Itadori", sprite: IMAGES.yuji_serious, text: "Wait, seriously?! I'm coming with you!" },
+            { speaker: "Megumi Fushiguro", sprite: IMAGES.megumi_serious, text: "Damn it! The curse is already breaking through the windows! Divine Dogs, go!" },
+            { speaker: "Yuji Itadori", sprite: IMAGES.yuji_serious, text: "Get away from them, you monster! Take this!" },
+            { speaker: "Megumi Fushiguro", sprite: IMAGES.megumi_serious, text: "Itadori, don't! You can't beat a curse without cursed energy!" },
+            { speaker: "Yuji Itadori", sprite: IMAGES.yuji_serious, text: "(To save everyone... to gain cursed energy... I just need to swallow this, right?!)" },
+            { speaker: "Megumi Fushiguro", sprite: IMAGES.megumi_serious, text: "DON'T EAT THAT! IT'S POISON!" },
+            { speaker: "Yuji Itadori", sprite: IMAGES.yuji_serious, text: "*GULP*" },
+            { speaker: "Ryomen Sukuna", sprite: IMAGES.sukuna, text: "AHAHAHA! Magnificent! The light of the raw world is best felt in the flesh!" },
+            { speaker: "Ryomen Sukuna", sprite: IMAGES.sukuna, text: "Where are the women?! The children?! What a wonderful era this will be!" },
+            { speaker: "Yuji Itadori", sprite: IMAGES.yuji_serious, text: "Hey... what are you doing with my body? Give it back." },
+            { speaker: "Megumi Fushiguro", sprite: IMAGES.megumi_serious, text: "(He... he suppressed Ryomen Sukuna's consciousness?! How is that possible?!)" },
+            { speaker: "Satoru Gojo", sprite: IMAGES.gojo, text: "Yo! Looks like you guys had a pretty rough night. Fushiguro, did you find the finger?" },
+            { speaker: "Megumi Fushiguro", sprite: IMAGES.megumi_normal, text: "Gojo-sensei... it's worse. He ate it." },
+            { speaker: "Satoru Gojo", sprite: IMAGES.gojo, text: "Hmm~ Interesting! Can you switch with Sukuna for 10 seconds and come back, kid?" },
+            { speaker: "Yuji Itadori", sprite: IMAGES.yuji_normal, text: "I think I can do that... but isn't he dangerous?" },
+            { speaker: "Satoru Gojo", sprite: IMAGES.gojo, text: "Don't worry about it. After all... I'm the strongest." }
+        ];
+
+        let currentIndex = 0;
+
+        const nameTag = document.getElementById('name-tag');
+        const dialogueText = document.getElementById('dialogue-text');
+        const charSprite = document.getElementById('char-sprite');
+        const dialogueBox = document.getElementById('dialogue-box');
+
+        function renderScene() {
+            const current = script[currentIndex];
+            nameTag.innerText = current.speaker;
+            dialogueText.innerText = current.text;
+
+            // Update Sprite
+            if (current.sprite) {
+                charSprite.style.opacity = "1";
+                charSprite.src = current.sprite;
+            } else {
+                charSprite.style.opacity = "0";
+            }
+
+            // Styling colors based on speaker
+            if (current.speaker.includes("Sukuna")) {
+                nameTag.style.background = "linear-gradient(90deg, #ff2a5f 0%, #a8002a 100%)";
+                document.querySelector('.dialogue-box').style.borderColor = "#ff2a5f";
+            } else if (current.speaker.includes("Gojo")) {
+                nameTag.style.background = "linear-gradient(90deg, #38bdf8 0%, #0284c7 100%)";
+                document.querySelector('.dialogue-box').style.borderColor = "#38bdf8";
+            } else {
+                nameTag.style.background = "linear-gradient(90deg, #00d2ff 0%, #0072ff 100%)";
+                document.querySelector('.dialogue-box').style.borderColor = "#00d2ff";
+            }
+        }
+
+        dialogueBox.addEventListener('click', () => {
+            currentIndex++;
+            if (currentIndex < script.length) {
+                renderScene();
+            } else {
+                alert("Chapter 1 Completed! Returning to main game.");
+                window.location.href = "index.html";
+            }
+        });
+
+        // Initialize first scene
+        renderScene();
+    </script>
+</body>
+</html>
