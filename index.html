@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jujutsu Kaisen: Yuji's Path - Incremental Game</title>
-    <!-- Google Fonts & Font Awesome Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -235,6 +234,9 @@
             cursor: pointer;
             transition: all 0.2s ease;
             white-space: nowrap;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
         }
 
         .buy-btn:hover:not(:disabled) {
@@ -365,11 +367,6 @@
             gap: 8px;
         }
 
-        .story-card.completed {
-            border-color: var(--gold);
-            background: rgba(245, 158, 11, 0.03);
-        }
-
         .story-header {
             display: flex;
             justify-content: space-between;
@@ -380,11 +377,6 @@
             font-weight: 700;
             font-size: 0.95rem;
             color: var(--gold);
-        }
-
-        .story-reward {
-            font-size: 0.75rem;
-            color: var(--ce-blue);
         }
 
         /* --- BOTTOM NAVIGATION BAR --- */
@@ -448,24 +440,23 @@
             100% { opacity: 0; transform: translateY(-40px) scale(1.2); }
         }
 
-        /* Black Flash Overlay Effect */
+        /* Gentle, Non-Epileptic Black Flash Aura Pulse */
         .black-flash-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: #fff;
             pointer-events: none;
             opacity: 0;
             z-index: 999;
         }
 
         .flash-active {
-            animation: flashAnim 0.15s ease-out;
+            animation: gentlePulse 0.4s ease-out;
         }
 
-        @keyframes flashAnim {
-            0% { opacity: 0.8; background: #000; }
-            50% { opacity: 1; background: #ff2a5f; }
-            100% { opacity: 0; }
+        @keyframes gentlePulse {
+            0% { opacity: 0; box-shadow: inset 0 0 0px rgba(255, 42, 95, 0); }
+            50% { opacity: 0.7; box-shadow: inset 0 0 80px rgba(255, 42, 95, 0.45); background: rgba(255, 42, 95, 0.08); }
+            100% { opacity: 0; box-shadow: inset 0 0 0px rgba(255, 42, 95, 0); }
         }
     </style>
 </head>
@@ -473,7 +464,6 @@
 
     <div id="flash-overlay" class="black-flash-overlay"></div>
 
-    <!-- Top Bar: Player Stats -->
     <header>
         <div class="user-profile">
             <div class="user-title">
@@ -499,11 +489,9 @@
         </div>
     </header>
 
-    <!-- Main Content Area -->
     <main>
-
         <!-- 1. TRAINING TAB -->
-        <div id="tab-training" class="tab-content active">
+        <div id="tab-training" class="tab-content">
             <div class="strike-zone">
                 <button class="strike-btn" id="strike-btn">
                     <i class="fa-solid fa-hand-fist"></i>
@@ -558,7 +546,7 @@
         </div>
 
         <!-- 2. COMBAT TAB -->
-        <div id="tab-combat" class="tab-content">
+        <div id="tab-combat" class="tab-content active">
             <div class="enemy-card">
                 <div class="enemy-avatar" id="enemy-icon">
                     <i class="fa-solid fa-ghost"></i>
@@ -584,25 +572,51 @@
                 <i class="fa-solid fa-coins" style="color: var(--gold);"></i>
             </div>
             <div style="font-size: 0.85rem; color: var(--text-muted); background: var(--panel-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
-                Defeating curses yields <strong style="color:var(--ce-blue);">Cursed Energy</strong> and <strong style="color:var(--gold);">Soul Shards</strong>. Stronger curses spawn automatically as you defeat them!
+                Defeating curses yields <strong style="color:var(--ce-blue);">Cursed Energy</strong> and <strong style="color:var(--gold);">Soul Shards</strong>.
             </div>
         </div>
 
-        <!-- 3. STORY TAB -->
+        <!-- 3. STORY TAB (Links to separate webpages) -->
         <div id="tab-story" class="tab-content">
             <div class="section-title">
-                <span>Jujutsu Chronicles</span>
+                <span>Jujutsu Chronicles (Story Chapters)</span>
                 <i class="fa-solid fa-book-bookmark" style="color: var(--gold);"></i>
             </div>
 
-            <div class="story-list" id="story-list">
-                <!-- Story items rendered via JS -->
+            <div class="story-list">
+                <div class="story-card">
+                    <div class="story-header">
+                        <span class="story-title">Chapter 1: The Incarnation</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Sugisawa High, the Occult Club, and swallowing Sukuna's finger.</div>
+                    <div style="margin-top: 6px;">
+                        <a href="story1.html" target="_blank" class="buy-btn"><i class="fa-solid fa-book-open"></i> Read Chapter 1</a>
+                    </div>
+                </div>
+
+                <div class="story-card">
+                    <div class="story-header">
+                        <span class="story-title">Chapter 2: Cursed Womb Must Die</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">The Detention Center mission and confronting the special grade cursed womb.</div>
+                    <div style="margin-top: 6px;">
+                        <a href="story2.html" target="_blank" class="buy-btn"><i class="fa-solid fa-book-open"></i> Read Chapter 2</a>
+                    </div>
+                </div>
+
+                <div class="story-card">
+                    <div class="story-header">
+                        <span class="story-title">Chapter 3: Kyoto Sister-School Event</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Training with Aoi Todo and unlocking the legendary Black Flash.</div>
+                    <div style="margin-top: 6px;">
+                        <a href="story3.html" target="_blank" class="buy-btn"><i class="fa-solid fa-book-open"></i> Read Chapter 3</a>
+                    </div>
+                </div>
             </div>
         </div>
-
     </main>
 
-    <!-- Bottom Navigation Bar -->
     <nav>
         <button class="nav-btn" data-tab="tab-training">
             <i class="fa-solid fa-dumbbell"></i>
@@ -619,79 +633,28 @@
     </nav>
 
     <script>
-        // --- GAME STATE ---
         const state = {
-            ce: 0,
-            power: 1,
-            shards: 0,
-            fingers: 0,
-            multiplier: 1,
-            critChance: 0.05, // 5% base Black Flash chance
-            autoCeRate: 0,
-
-            // Upgrades
-            upg1Level: 0,
-            upg2Level: 0,
-            upg3Level: 0,
-
-            // Current Enemy
-            enemyIndex: 0,
-            enemyHp: 10,
-            enemyMaxHp: 10,
-            autoCombat: false,
-
-            // Story Progression
-            storyChapter: 0
+            ce: 0, power: 1, shards: 0, fingers: 0, multiplier: 1, critChance: 0.05, autoCeRate: 0,
+            upg1Level: 0, upg2Level: 0, upg3Level: 0,
+            enemyIndex: 0, enemyHp: 10, enemyMaxHp: 10, autoCombat: false
         };
 
         const enemies = [
             { name: "Fly Head Curse", baseHp: 10, ceReward: 5, shardReward: 1, icon: "fa-ghost", lvl: 1 },
             { name: "Rugby Field Curse", baseHp: 40, ceReward: 20, shardReward: 3, icon: "fa-spaghetti-monster-flying", lvl: 2 },
             { name: "Detention Center Finger Bearer", baseHp: 150, ceReward: 75, shardReward: 10, icon: "fa-skull-crossbones", lvl: 3 },
-            { name: "Mahito (Unregistered Grade 1)", baseHp: 500, ceReward: 250, shardReward: 30, icon: "fa-mask", lvl: 4 },
-            { name: "Jogo (Disaster Curse)", baseHp: 1500, ceReward: 800, shardReward: 100, icon: "fa-fire", lvl: 5 }
+            { name: "Mahito (Unregistered Grade 1)", baseHp: 500, ceReward: 250, shardReward: 30, icon: "fa-mask", lvl: 4 }
         ];
 
-        const storyChapters = [
-            { title: "Chapter 1: The Incarnation", reqFingers: 0, desc: "Swallow Sukuna's Finger at Sugisawa High to save Megumi.", done: false, reward: "+10% Power Boost" },
-            { title: "Chapter 2: Cursed Womb Must Die", reqFingers: 1, desc: "Face the Finger Bearer in the detention center.", done: false, reward: "Unlock Auto Attack Feature" },
-            { title: "Chapter 3: Kyoto Sister-School Event", reqFingers: 2, desc: "Master Black Flash alongside Aoi Todo.", done: false, reward: "+10% Black Flash Crit Chance" },
-            { title: "Chapter 4: The Shibuya Incident", reqFingers: 4, desc: "Endure absolute tragedy and push Yuji beyond his limits.", done: false, reward: "Double All CE Rewards" }
-        ];
-
-        // --- DOM ELEMENTS ---
-        const ceValEl = document.getElementById('ce-val');
-        const powerValEl = document.getElementById('power-val');
-        const shardsValEl = document.getElementById('shards-val');
-        const fingerValEl = document.getElementById('finger-val');
-
-        const strikeBtn = document.getElementById('strike-btn');
-        const buyUpg1Btn = document.getElementById('buy-upg-1');
-        const buyUpg2Btn = document.getElementById('buy-upg-2');
-        const buyUpg3Btn = document.getElementById('buy-upg-3');
-        const prestigeBtn = document.getElementById('prestige-btn');
-
-        const enemyNameEl = document.getElementById('enemy-name');
-        const enemyLevelEl = document.getElementById('enemy-level');
-        const enemyIconEl = document.getElementById('enemy-icon');
-        const hpFillEl = document.getElementById('hp-fill');
-        const hpTextEl = document.getElementById('hp-text');
-        const attackBtn = document.getElementById('attack-btn');
-        const autoAttackBtn = document.getElementById('auto-attack-btn');
-        const flashOverlay = document.getElementById('flash-overlay');
-
-        // --- TAB NAVIGATION ---
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
                 btn.classList.add('active');
                 document.getElementById(btn.dataset.tab).classList.add('active');
             });
         });
 
-        // --- HELPER FUNCTIONS ---
         function formatNum(num) {
             if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
             if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
@@ -702,129 +665,92 @@
             const el = document.createElement('div');
             el.className = `dmg-text ${isCrit ? 'dmg-critical' : 'dmg-normal'}`;
             el.innerText = text;
-
             const x = event ? event.clientX : window.innerWidth / 2;
             const y = event ? event.clientY : window.innerHeight / 2;
-
             el.style.left = `${x - 20}px`;
             el.style.top = `${y - 20}px`;
-
             document.body.appendChild(el);
             setTimeout(() => el.remove(), 800);
         }
 
+        const flashOverlay = document.getElementById('flash-overlay');
         function triggerBlackFlash() {
             flashOverlay.classList.add('flash-active');
-            setTimeout(() => flashOverlay.classList.remove('flash-active'), 150);
+            setTimeout(() => flashOverlay.classList.remove('flash-active'), 400);
         }
 
-        // --- GAME LOGIC ---
         function updateUI() {
-            ceValEl.innerText = formatNum(state.ce);
-            powerValEl.innerText = formatNum(state.power * state.multiplier);
-            shardsValEl.innerText = formatNum(state.shards);
-            fingerValEl.innerText = state.fingers;
+            document.getElementById('ce-val').innerText = formatNum(state.ce);
+            document.getElementById('power-val').innerText = formatNum(state.power * state.multiplier);
+            document.getElementById('shards-val').innerText = formatNum(state.shards);
+            document.getElementById('finger-val').innerText = state.fingers;
 
-            // Upgrade Costs
             const cost1 = Math.floor(15 * Math.pow(1.5, state.upg1Level));
             const cost2 = Math.floor(50 * Math.pow(1.6, state.upg2Level));
             const cost3 = Math.floor(200 * Math.pow(2.0, state.upg3Level));
 
-            buyUpg1Btn.innerText = `Cost: ${formatNum(cost1)} CE`;
-            buyUpg1Btn.disabled = state.ce < cost1;
-
-            buyUpg2Btn.innerText = `Cost: ${formatNum(cost2)} CE`;
-            buyUpg2Btn.disabled = state.ce < cost2;
-
-            buyUpg3Btn.innerText = `Cost: ${formatNum(cost3)} CE`;
-            buyUpg3Btn.disabled = state.ce < cost3;
+            document.getElementById('buy-upg-1').innerText = `Cost: ${formatNum(cost1)} CE`;
+            document.getElementById('buy-upg-1').disabled = state.ce < cost1;
+            document.getElementById('buy-upg-2').innerText = `Cost: ${formatNum(cost2)} CE`;
+            document.getElementById('buy-upg-2').disabled = state.ce < cost2;
+            document.getElementById('buy-upg-3').innerText = `Cost: ${formatNum(cost3)} CE`;
+            document.getElementById('buy-upg-3').disabled = state.ce < cost3;
 
             const prestigeCost = 1000 * Math.pow(2.5, state.fingers);
+            const prestigeBtn = document.getElementById('prestige-btn');
             prestigeBtn.innerText = state.ce >= prestigeCost ? `Consume (+1 Finger)` : `Req: ${formatNum(prestigeCost)} CE`;
             prestigeBtn.disabled = state.ce < prestigeCost;
 
-            // Enemy UI
             const curEnemy = enemies[state.enemyIndex];
-            enemyNameEl.innerText = curEnemy.name;
-            enemyLevelEl.innerText = `Level ${curEnemy.lvl} Curse`;
-            enemyIconEl.innerHTML = `<i class="fa-solid ${curEnemy.icon}"></i>`;
+            document.getElementById('enemy-name').innerText = curEnemy.name;
+            document.getElementById('enemy-level').innerText = `Level ${curEnemy.lvl} Curse`;
+            document.getElementById('enemy-icon').innerHTML = `<i class="fa-solid ${curEnemy.icon}"></i>`;
 
             const hpPercent = Math.max(0, (state.enemyHp / state.enemyMaxHp) * 100);
-            hpFillEl.style.width = `${hpPercent}%`;
-            hpTextEl.innerText = `${formatNum(Math.max(0, state.enemyHp))} / ${formatNum(state.enemyMaxHp)} HP`;
-
-            renderStory();
+            document.getElementById('hp-fill').style.width = `${hpPercent}%`;
+            document.getElementById('hp-text').innerText = `${formatNum(Math.max(0, state.enemyHp))} / ${formatNum(state.enemyMaxHp)} HP`;
         }
 
-        // Training Strike Click
-        strikeBtn.addEventListener('click', (e) => {
+        document.getElementById('strike-btn').addEventListener('click', (e) => {
             const isCrit = Math.random() < state.critChance;
             let gain = state.power * state.multiplier;
-
             if (isCrit) {
-                gain *= 2.5; // Black Flash Multiplier
+                gain *= 2.5;
                 triggerBlackFlash();
                 createFloatingText(`BLACK FLASH! +${formatNum(gain)}`, true, e);
             } else {
                 createFloatingText(`+${formatNum(gain)}`, false, e);
             }
-
             state.ce += gain;
             updateUI();
         });
 
-        // Buy Upgrades
-        buyUpg1Btn.addEventListener('click', () => {
+        document.getElementById('buy-upg-1').addEventListener('click', () => {
             const cost = Math.floor(15 * Math.pow(1.5, state.upg1Level));
-            if (state.ce >= cost) {
-                state.ce -= cost;
-                state.power += 1;
-                state.upg1Level++;
-                updateUI();
-            }
+            if (state.ce >= cost) { state.ce -= cost; state.power += 1; state.upg1Level++; updateUI(); }
         });
-
-        buyUpg2Btn.addEventListener('click', () => {
+        document.getElementById('buy-upg-2').addEventListener('click', () => {
             const cost = Math.floor(50 * Math.pow(1.6, state.upg2Level));
-            if (state.ce >= cost) {
-                state.ce -= cost;
-                state.autoCeRate += 1;
-                state.upg2Level++;
-                updateUI();
-            }
+            if (state.ce >= cost) { state.ce -= cost; state.autoCeRate += 1; state.upg2Level++; updateUI(); }
         });
-
-        buyUpg3Btn.addEventListener('click', () => {
+        document.getElementById('buy-upg-3').addEventListener('click', () => {
             const cost = Math.floor(200 * Math.pow(2.0, state.upg3Level));
-            if (state.ce >= cost) {
-                state.ce -= cost;
-                state.critChance += 0.05;
-                state.upg3Level++;
-                updateUI();
-            }
+            if (state.ce >= cost) { state.ce -= cost; state.critChance += 0.05; state.upg3Level++; updateUI(); }
         });
 
-        // Prestige
-        prestigeBtn.addEventListener('click', () => {
+        document.getElementById('prestige-btn').addEventListener('click', () => {
             const prestigeCost = 1000 * Math.pow(2.5, state.fingers);
             if (state.ce >= prestigeCost) {
                 state.fingers++;
-                state.multiplier += 0.5; // +50% permanent boost per finger
-                state.ce = 0;
-                state.power = 1;
-                state.upg1Level = 0;
-                state.upg2Level = 0;
-                state.upg3Level = 0;
-                state.autoCeRate = 0;
+                state.multiplier += 0.5;
+                state.ce = 0; state.power = 1; state.upg1Level = 0; state.upg2Level = 0; state.upg3Level = 0; state.autoCeRate = 0;
                 updateUI();
             }
         });
 
-        // Combat Mechanics
         function attackEnemy(e) {
             const isCrit = Math.random() < state.critChance;
             let dmg = state.power * state.multiplier;
-
             if (isCrit) {
                 dmg *= 2.5;
                 triggerBlackFlash();
@@ -832,94 +758,34 @@
             } else {
                 createFloatingText(`${formatNum(dmg)}`, false, e);
             }
-
             state.enemyHp -= dmg;
-
             if (state.enemyHp <= 0) {
-                // Enemy Defeated
                 const curEnemy = enemies[state.enemyIndex];
                 state.ce += curEnemy.ceReward;
                 state.shards += curEnemy.shardReward;
-
-                // Move to next enemy or keep loop
-                if (state.enemyIndex < enemies.length - 1) {
-                    state.enemyIndex++;
-                }
-                
+                if (state.enemyIndex < enemies.length - 1) state.enemyIndex++;
                 const nextEnemy = enemies[state.enemyIndex];
                 state.enemyMaxHp = nextEnemy.baseHp * (1 + state.enemyIndex * 0.5);
                 state.enemyHp = state.enemyMaxHp;
             }
-
             updateUI();
         }
 
-        attackBtn.addEventListener('click', (e) => attackEnemy(e));
+        document.getElementById('attack-btn').addEventListener('click', (e) => attackEnemy(e));
 
+        const autoAttackBtn = document.getElementById('auto-attack-btn');
         autoAttackBtn.addEventListener('click', () => {
             state.autoCombat = !state.autoCombat;
             autoAttackBtn.classList.toggle('active', state.autoCombat);
-            autoAttackBtn.innerHTML = state.autoCombat ? 
-                `<i class="fa-solid fa-robot"></i> Auto: ON` : 
-                `<i class="fa-solid fa-robot"></i> Auto: OFF`;
+            autoAttackBtn.innerHTML = state.autoCombat ? `<i class="fa-solid fa-robot"></i> Auto: ON` : `<i class="fa-solid fa-robot"></i> Auto: OFF`;
         });
 
-        // Render Story
-        function renderStory() {
-            const container = document.getElementById('story-list');
-            container.innerHTML = '';
-
-            storyChapters.forEach((ch, idx) => {
-                const isUnlocked = state.fingers >= ch.reqFingers;
-                const card = document.createElement('div');
-                card.className = `story-card ${ch.done ? 'completed' : ''}`;
-
-                card.innerHTML = `
-                    <div class="story-header">
-                        <span class="story-title">${ch.title}</span>
-                        <span class="story-reward">${ch.reward}</span>
-                    </div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted);">${ch.desc}</div>
-                    <div style="margin-top: 6px;">
-                        ${ch.done ? 
-                            '<span style="color:var(--gold); font-size:0.8rem; font-weight:700;"><i class="fa-solid fa-circle-check"></i> Completed</span>' : 
-                            `<button class="buy-btn" onclick="claimStory(${idx})" ${!isUnlocked ? 'disabled' : ''}>
-                                ${isUnlocked ? 'Complete Chapter' : `Req: ${ch.reqFingers} Fingers`}
-                             </button>`
-                        }
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        window.claimStory = function(idx) {
-            const ch = storyChapters[idx];
-            if (!ch.done && state.fingers >= ch.reqFingers) {
-                ch.done = true;
-                if (idx === 0) state.multiplier += 0.1;
-                if (idx === 2) state.critChance += 0.1;
-                if (idx === 3) state.multiplier *= 2;
-                updateUI();
-            }
-        };
-
-        // Game Loops
         setInterval(() => {
-            // Auto CE Generation
-            if (state.autoCeRate > 0) {
-                state.ce += state.autoCeRate * state.multiplier;
-            }
-
-            // Auto Combat Loop
-            if (state.autoCombat) {
-                attackEnemy(null);
-            }
-
+            if (state.autoCeRate > 0) state.ce += state.autoCeRate * state.multiplier;
+            if (state.autoCombat) attackEnemy(null);
             updateUI();
         }, 1000);
 
-        // Initial setup
         state.enemyMaxHp = enemies[0].baseHp;
         state.enemyHp = state.enemyMaxHp;
         updateUI();
