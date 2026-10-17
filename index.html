@@ -758,14 +758,16 @@
                 <i class="fa-solid fa-shield-halved" style="font-size: 1.5rem; color: var(--ce-blue);"></i>
             </div>
 
+            <!-- OWNED WEAPON INDEX -->
             <div class="section-title">
                 <span>Owned Weapon Index</span>
                 <i class="fa-solid fa-book-bookmark" style="color: var(--ce-blue);"></i>
             </div>
             <div class="index-grid" id="owned-weapons-index">
-                <!-- Owned Weapons Injected via JS -->
+                <!-- Owned Weapons dynamically rendered here with "Equip" buttons -->
             </div>
 
+            <!-- SHOP SECTION BELOW INDEX -->
             <div class="section-title" style="margin-top: 15px;">
                 <span>Cursed Armory Shop</span>
                 <i class="fa-solid fa-store" style="color: var(--gold);"></i>
@@ -777,7 +779,7 @@
             </div>
 
             <div class="shop-grid" id="shop-items-list">
-                <!-- Shop items injected via JS -->
+                <!-- Shop items dynamically injected via JS -->
             </div>
 
             <div class="section-title" style="margin-top: 15px;">
@@ -900,7 +902,6 @@
             { id: "executioners_sword", name: "Executioner's Sword", rarity: "legendary", cost: 10000, bonusPower: 9000 }
         ];
 
-        // SCALED ENEMY POOL (High HP for balanced weapon scaling)
         const enemyPool = [
             { name: "Fly Head Curse", grade: "Grade 4", hpMult: 1, atk: 10, ceReward: 10, shardReward: 5, icon: "fa-ghost" },
             { name: "Roppongi Crawling Curse", grade: "Grade 3", hpMult: 3, atk: 18, ceReward: 25, shardReward: 12, icon: "fa-bug" },
@@ -999,6 +1000,7 @@
         }
 
         function renderShopAndIndex() {
+            // Render Owned Weapon Index
             const indexContainer = document.getElementById('owned-weapons-index');
             indexContainer.innerHTML = '';
 
@@ -1018,6 +1020,7 @@
                 indexContainer.appendChild(card);
             });
 
+            // Render Shop
             const shopContainer = document.getElementById('shop-items-list');
             shopContainer.innerHTML = '';
 
