@@ -172,7 +172,6 @@
             letter-spacing: 1px;
         }
 
-        /* Upgrades Section */
         .section-title {
             font-family: 'Cinzel', serif;
             font-size: 1rem;
@@ -200,10 +199,6 @@
             align-items: center;
             justify-content: space-between;
             transition: border-color 0.2s ease;
-        }
-
-        .upgrade-card:hover {
-            border-color: rgba(255, 255, 255, 0.2);
         }
 
         .upgrade-info {
@@ -253,6 +248,27 @@
         }
 
         /* --- COMBAT TAB --- */
+        .grade-warning {
+            display: none;
+            background: linear-gradient(90deg, #ff2a5f 0%, #72001c 100%);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            text-align: center;
+            animation: pulseBanner 0.8s infinite alternate;
+            box-shadow: 0 0 15px rgba(255, 42, 95, 0.5);
+        }
+
+        @keyframes pulseBanner {
+            from { transform: scale(0.98); opacity: 0.8; }
+            to { transform: scale(1.01); opacity: 1; }
+        }
+
         .enemy-card {
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -281,11 +297,69 @@
             box-shadow: 0 0 15px var(--sukuna-glow);
         }
 
-        .hp-bar-container {
+        /* QTE Dodge Popup Overlay */
+        .qte-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 50;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            backdrop-filter: blur(4px);
+        }
+
+        .qte-title {
+            color: var(--sukuna-red);
+            font-family: 'Cinzel', serif;
+            font-weight: 800;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .dodge-qte-btn {
+            background: linear-gradient(135deg, #00d2ff 0%, #0072ff 100%);
+            color: #000;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 0 20px var(--ce-glow);
+            animation: qtePulse 0.3s infinite alternate;
+        }
+
+        @keyframes qtePulse {
+            from { transform: scale(0.95); }
+            to { transform: scale(1.05); }
+        }
+
+        /* Bars in Combat */
+        .bar-wrapper {
             width: 100%;
-            height: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .bar-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .hp-bar-container, .ce-bar-container, .player-hp-container {
+            width: 100%;
+            height: 14px;
             background: #1a1a20;
-            border-radius: 8px;
+            border-radius: 6px;
             overflow: hidden;
             border: 1px solid rgba(255,255,255,0.1);
             position: relative;
@@ -298,55 +372,69 @@
             transition: width 0.1s linear;
         }
 
-        .hp-text {
+        .player-hp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+
+        .ce-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d2ff, #0072ff);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .bar-text {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
             text-shadow: 0 0 4px #000;
         }
 
-        .combat-controls {
+        /* Moves Grid */
+        .moves-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
             width: 100%;
+            margin-top: 4px;
         }
 
-        .attack-btn {
-            background: linear-gradient(135deg, #ff2a5f 0%, #a8002a 100%);
-            border: none;
-            color: #fff;
-            padding: 12px;
-            border-radius: 8px;
-            font-family: inherit;
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            box-shadow: 0 4px 12px var(--sukuna-glow);
-        }
-
-        .attack-btn:active {
-            transform: scale(0.97);
-        }
-
-        .auto-btn {
+        .move-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 12px;
+            color: #fff;
+            padding: 10px;
             border-radius: 8px;
             font-family: inherit;
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            transition: all 0.15s ease;
         }
 
-        .auto-btn.active {
-            background: rgba(0, 210, 255, 0.15);
+        .move-btn:hover:not(:disabled) {
             border-color: var(--ce-blue);
+            background: rgba(0, 210, 255, 0.1);
+        }
+
+        .move-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: #333;
+        }
+
+        .move-cost {
+            font-size: 0.68rem;
             color: var(--ce-blue);
         }
 
@@ -424,23 +512,14 @@
             z-index: 100;
         }
 
-        .dmg-normal {
-            color: #fff;
-            text-shadow: 0 0 4px #000;
-        }
-
-        .dmg-critical {
-            color: #ff2a5f;
-            font-size: 1.6rem;
-            text-shadow: 0 0 8px var(--sukuna-red), 0 0 2px #fff;
-        }
+        .dmg-normal { color: #fff; text-shadow: 0 0 4px #000; }
+        .dmg-critical { color: #ff2a5f; font-size: 1.6rem; text-shadow: 0 0 8px var(--sukuna-red), 0 0 2px #fff; }
 
         @keyframes floatUp {
             0% { opacity: 1; transform: translateY(0) scale(1); }
             100% { opacity: 0; transform: translateY(-40px) scale(1.2); }
         }
 
-        /* Gentle, Non-Epileptic Black Flash Aura Pulse */
         .black-flash-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -449,14 +528,12 @@
             z-index: 999;
         }
 
-        .flash-active {
-            animation: gentlePulse 0.4s ease-out;
-        }
+        .flash-active { animation: gentlePulse 0.4s ease-out; }
 
         @keyframes gentlePulse {
-            0% { opacity: 0; box-shadow: inset 0 0 0px rgba(255, 42, 95, 0); }
+            0% { opacity: 0; }
             50% { opacity: 0.7; box-shadow: inset 0 0 80px rgba(255, 42, 95, 0.45); background: rgba(255, 42, 95, 0.08); }
-            100% { opacity: 0; box-shadow: inset 0 0 0px rgba(255, 42, 95, 0); }
+            100% { opacity: 0; }
         }
     </style>
 </head>
@@ -507,7 +584,7 @@
             <div class="upgrades-list">
                 <div class="upgrade-card">
                     <div class="upgrade-info">
-                        <div class="upgrade-name">Divergent Fist</div>
+                        <div class="upgrade-name">Divergent Fist Training</div>
                         <div class="upgrade-desc">+1 Base Physical Power</div>
                     </div>
                     <button class="buy-btn" id="buy-upg-1">Cost: 15 CE</button>
@@ -547,23 +624,76 @@
 
         <!-- 2. COMBAT TAB -->
         <div id="tab-combat" class="tab-content active">
+
+            <!-- High Grade Warning Banner -->
+            <div class="grade-warning" id="grade-warning">
+                <i class="fa-solid fa-triangle-exclamation"></i> WARNING: DANGEROUS CURSE DETECTED!
+            </div>
+
             <div class="enemy-card">
+
+                <!-- QTE Dodge Overlay -->
+                <div class="qte-overlay" id="qte-overlay">
+                    <div class="qte-title"><i class="fa-solid fa-bolt"></i> CURSE ATTACKING!</div>
+                    <button class="dodge-qte-btn" id="dodge-btn">CLICK TO DODGE!</button>
+                </div>
+
                 <div class="enemy-avatar" id="enemy-icon">
                     <i class="fa-solid fa-ghost"></i>
                 </div>
                 <div>
                     <h3 id="enemy-name" style="font-family: 'Cinzel', serif;">Fly Head Curse</h3>
-                    <div style="font-size: 0.8rem; color: var(--text-muted);" id="enemy-level">Level 1 Curse</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);" id="enemy-grade">Grade 4 Curse</div>
                 </div>
 
-                <div class="hp-bar-container">
-                    <div class="hp-bar-fill" id="hp-fill"></div>
-                    <div class="hp-text" id="hp-text">10 / 10 HP</div>
+                <!-- Yuji's Player HP Bar -->
+                <div class="bar-wrapper">
+                    <div class="bar-label" style="color: #10b981;">Yuji's Health</div>
+                    <div class="player-hp-container">
+                        <div class="player-hp-fill" id="player-hp-fill"></div>
+                        <div class="bar-text" id="player-hp-text">100 / 100 HP</div>
+                    </div>
                 </div>
 
-                <div class="combat-controls">
-                    <button class="attack-btn" id="attack-btn"><i class="fa-solid fa-burst"></i> Strike</button>
-                    <button class="auto-btn" id="auto-attack-btn"><i class="fa-solid fa-robot"></i> Auto: OFF</button>
+                <!-- Enemy HP Bar -->
+                <div class="bar-wrapper">
+                    <div class="bar-label">Enemy Health</div>
+                    <div class="hp-bar-container">
+                        <div class="hp-bar-fill" id="hp-fill"></div>
+                        <div class="bar-text" id="hp-text">10 / 10 HP</div>
+                    </div>
+                </div>
+
+                <!-- Player CE Bar -->
+                <div class="bar-wrapper">
+                    <div class="bar-label" style="color: var(--ce-blue);">Yuji's Cursed Energy</div>
+                    <div class="ce-bar-container">
+                        <div class="ce-bar-fill" id="combat-ce-fill"></div>
+                        <div class="bar-text" id="combat-ce-text">0 / 100 CE</div>
+                    </div>
+                </div>
+
+                <!-- Combat Moves -->
+                <div class="moves-grid">
+                    <button class="move-btn" id="move-punch">
+                        <span>Normal Punch</span>
+                        <span class="move-cost" style="color:#10b981;">Restores +15 CE</span>
+                    </button>
+
+                    <button class="move-btn" id="move-strike">
+                        <span>Cursed Strike</span>
+                        <span class="move-cost">Costs 20 CE (2.5x)</span>
+                    </button>
+
+                    <button class="move-btn" id="move-divergent">
+                        <span>Divergent Fist</span>
+                        <span class="move-cost">Costs 50 CE (5x)</span>
+                    </button>
+
+                    <button class="move-btn" id="move-manji">
+                        <span>Manji Kick</span>
+                        <span class="move-cost">Costs 100 CE (10x)</span>
+                    </button>
                 </div>
             </div>
 
@@ -572,11 +702,11 @@
                 <i class="fa-solid fa-coins" style="color: var(--gold);"></i>
             </div>
             <div style="font-size: 0.85rem; color: var(--text-muted); background: var(--panel-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
-                Defeating curses yields <strong style="color:var(--ce-blue);">Cursed Energy</strong> and <strong style="color:var(--gold);">Soul Shards</strong>.
+                Turn-based combat: Choose your move, then react fast to the <strong style="color:var(--ce-blue);">DODGE QTE</strong> when the curse strikes back!
             </div>
         </div>
 
-        <!-- 3. STORY TAB (Links to separate webpages) -->
+        <!-- 3. STORY TAB -->
         <div id="tab-story" class="tab-content">
             <div class="section-title">
                 <span>Jujutsu Chronicles (Story Chapters)</span>
@@ -634,161 +764,17 @@
 
     <script>
         const state = {
-            ce: 0, power: 1, shards: 0, fingers: 0, multiplier: 1, critChance: 0.05, autoCeRate: 0,
+            ce: 0, maxCe: 100, power: 1, shards: 0, fingers: 0, multiplier: 1, critChance: 0.05, autoCeRate: 0,
             upg1Level: 0, upg2Level: 0, upg3Level: 0,
-            enemyIndex: 0, enemyHp: 10, enemyMaxHp: 10, autoCombat: false
+            playerHp: 100, playerMaxHp: 100,
+            currentEnemy: null, enemyHp: 10, enemyMaxHp: 10,
+            isTurnBusy: false, qteTimer: null, dodgedSuccessfully: false
         };
 
-        const enemies = [
-            { name: "Fly Head Curse", baseHp: 10, ceReward: 5, shardReward: 1, icon: "fa-ghost", lvl: 1 },
-            { name: "Rugby Field Curse", baseHp: 40, ceReward: 20, shardReward: 3, icon: "fa-spaghetti-monster-flying", lvl: 2 },
-            { name: "Detention Center Finger Bearer", baseHp: 150, ceReward: 75, shardReward: 10, icon: "fa-skull-crossbones", lvl: 3 },
-            { name: "Mahito (Unregistered Grade 1)", baseHp: 500, ceReward: 250, shardReward: 30, icon: "fa-mask", lvl: 4 }
-        ];
-
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById(btn.dataset.tab).classList.add('active');
-            });
-        });
-
-        function formatNum(num) {
-            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-            if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
-            return Math.floor(num);
-        }
-
-        function createFloatingText(text, isCrit, event) {
-            const el = document.createElement('div');
-            el.className = `dmg-text ${isCrit ? 'dmg-critical' : 'dmg-normal'}`;
-            el.innerText = text;
-            const x = event ? event.clientX : window.innerWidth / 2;
-            const y = event ? event.clientY : window.innerHeight / 2;
-            el.style.left = `${x - 20}px`;
-            el.style.top = `${y - 20}px`;
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 800);
-        }
-
-        const flashOverlay = document.getElementById('flash-overlay');
-        function triggerBlackFlash() {
-            flashOverlay.classList.add('flash-active');
-            setTimeout(() => flashOverlay.classList.remove('flash-active'), 400);
-        }
-
-        function updateUI() {
-            document.getElementById('ce-val').innerText = formatNum(state.ce);
-            document.getElementById('power-val').innerText = formatNum(state.power * state.multiplier);
-            document.getElementById('shards-val').innerText = formatNum(state.shards);
-            document.getElementById('finger-val').innerText = state.fingers;
-
-            const cost1 = Math.floor(15 * Math.pow(1.5, state.upg1Level));
-            const cost2 = Math.floor(50 * Math.pow(1.6, state.upg2Level));
-            const cost3 = Math.floor(200 * Math.pow(2.0, state.upg3Level));
-
-            document.getElementById('buy-upg-1').innerText = `Cost: ${formatNum(cost1)} CE`;
-            document.getElementById('buy-upg-1').disabled = state.ce < cost1;
-            document.getElementById('buy-upg-2').innerText = `Cost: ${formatNum(cost2)} CE`;
-            document.getElementById('buy-upg-2').disabled = state.ce < cost2;
-            document.getElementById('buy-upg-3').innerText = `Cost: ${formatNum(cost3)} CE`;
-            document.getElementById('buy-upg-3').disabled = state.ce < cost3;
-
-            const prestigeCost = 1000 * Math.pow(2.5, state.fingers);
-            const prestigeBtn = document.getElementById('prestige-btn');
-            prestigeBtn.innerText = state.ce >= prestigeCost ? `Consume (+1 Finger)` : `Req: ${formatNum(prestigeCost)} CE`;
-            prestigeBtn.disabled = state.ce < prestigeCost;
-
-            const curEnemy = enemies[state.enemyIndex];
-            document.getElementById('enemy-name').innerText = curEnemy.name;
-            document.getElementById('enemy-level').innerText = `Level ${curEnemy.lvl} Curse`;
-            document.getElementById('enemy-icon').innerHTML = `<i class="fa-solid ${curEnemy.icon}"></i>`;
-
-            const hpPercent = Math.max(0, (state.enemyHp / state.enemyMaxHp) * 100);
-            document.getElementById('hp-fill').style.width = `${hpPercent}%`;
-            document.getElementById('hp-text').innerText = `${formatNum(Math.max(0, state.enemyHp))} / ${formatNum(state.enemyMaxHp)} HP`;
-        }
-
-        document.getElementById('strike-btn').addEventListener('click', (e) => {
-            const isCrit = Math.random() < state.critChance;
-            let gain = state.power * state.multiplier;
-            if (isCrit) {
-                gain *= 2.5;
-                triggerBlackFlash();
-                createFloatingText(`BLACK FLASH! +${formatNum(gain)}`, true, e);
-            } else {
-                createFloatingText(`+${formatNum(gain)}`, false, e);
-            }
-            state.ce += gain;
-            updateUI();
-        });
-
-        document.getElementById('buy-upg-1').addEventListener('click', () => {
-            const cost = Math.floor(15 * Math.pow(1.5, state.upg1Level));
-            if (state.ce >= cost) { state.ce -= cost; state.power += 1; state.upg1Level++; updateUI(); }
-        });
-        document.getElementById('buy-upg-2').addEventListener('click', () => {
-            const cost = Math.floor(50 * Math.pow(1.6, state.upg2Level));
-            if (state.ce >= cost) { state.ce -= cost; state.autoCeRate += 1; state.upg2Level++; updateUI(); }
-        });
-        document.getElementById('buy-upg-3').addEventListener('click', () => {
-            const cost = Math.floor(200 * Math.pow(2.0, state.upg3Level));
-            if (state.ce >= cost) { state.ce -= cost; state.critChance += 0.05; state.upg3Level++; updateUI(); }
-        });
-
-        document.getElementById('prestige-btn').addEventListener('click', () => {
-            const prestigeCost = 1000 * Math.pow(2.5, state.fingers);
-            if (state.ce >= prestigeCost) {
-                state.fingers++;
-                state.multiplier += 0.5;
-                state.ce = 0; state.power = 1; state.upg1Level = 0; state.upg2Level = 0; state.upg3Level = 0; state.autoCeRate = 0;
-                updateUI();
-            }
-        });
-
-        function attackEnemy(e) {
-            const isCrit = Math.random() < state.critChance;
-            let dmg = state.power * state.multiplier;
-            if (isCrit) {
-                dmg *= 2.5;
-                triggerBlackFlash();
-                createFloatingText(`BLACK FLASH! ${formatNum(dmg)}`, true, e);
-            } else {
-                createFloatingText(`${formatNum(dmg)}`, false, e);
-            }
-            state.enemyHp -= dmg;
-            if (state.enemyHp <= 0) {
-                const curEnemy = enemies[state.enemyIndex];
-                state.ce += curEnemy.ceReward;
-                state.shards += curEnemy.shardReward;
-                if (state.enemyIndex < enemies.length - 1) state.enemyIndex++;
-                const nextEnemy = enemies[state.enemyIndex];
-                state.enemyMaxHp = nextEnemy.baseHp * (1 + state.enemyIndex * 0.5);
-                state.enemyHp = state.enemyMaxHp;
-            }
-            updateUI();
-        }
-
-        document.getElementById('attack-btn').addEventListener('click', (e) => attackEnemy(e));
-
-        const autoAttackBtn = document.getElementById('auto-attack-btn');
-        autoAttackBtn.addEventListener('click', () => {
-            state.autoCombat = !state.autoCombat;
-            autoAttackBtn.classList.toggle('active', state.autoCombat);
-            autoAttackBtn.innerHTML = state.autoCombat ? `<i class="fa-solid fa-robot"></i> Auto: ON` : `<i class="fa-solid fa-robot"></i> Auto: OFF`;
-        });
-
-        setInterval(() => {
-            if (state.autoCeRate > 0) state.ce += state.autoCeRate * state.multiplier;
-            if (state.autoCombat) attackEnemy(null);
-            updateUI();
-        }, 1000);
-
-        state.enemyMaxHp = enemies[0].baseHp;
-        state.enemyHp = state.enemyMaxHp;
-        updateUI();
-    </script>
-</body>
-</html>
+        const enemyPool = [
+            { name: "Fly Head Curse", grade: "Grade 4", hpMult: 1, atk: 10, ceReward: 10, shardReward: 1, icon: "fa-ghost" },
+            { name: "Roppongi Crawling Curse", grade: "Grade 3", hpMult: 2.5, atk: 18, ceReward: 25, shardReward: 2, icon: "fa-bug" },
+            { name: "Rugby Field Monster", grade: "Grade 2", hpMult: 6, atk: 30, ceReward: 60, shardReward: 5, icon: "fa-spaghetti-monster-flying" },
+            { name: "Grasshopper Curse", grade: "Grade 1", hpMult: 15, atk: 45, ceReward: 150, shardReward: 12, icon: "fa-locust" },
+            { name: "Detention Center Finger Bearer", grade: "Special Grade", hpMult: 40, atk: 70, ceReward: 400, shardReward: 30, icon: "fa-skull-crossbones" },
+            { name: "Mahito (Unregistered)", grade: "Special Grade", hpMult: 1
