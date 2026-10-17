@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inner Domain: 15 Finger Sukuna Trial (Shibuya Incident)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body { background-color: #050508; color: #fff; font-family: 'Rajdhani', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .vn-container { width: 100%; max-width: 900px; height: 100vh; max-height: 600px; background: #000; border: 2px solid #ff2a5f; position: relative; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; box-shadow: 0 0 30px rgba(255, 42, 95, 0.6); }
+        .vn-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle, rgba(255, 42, 95, 0.4) 0%, rgba(5, 5, 8, 0.98) 85%); opacity: 0.6; z-index: 1; }
+        .boss-ui { position: absolute; top: 20px; left: 20px; right: 20px; z-index: 20; background: rgba(10, 12, 22, 0.9); border: 1px solid #ff2a5f; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+        .hp-bar-container { width: 100%; height: 16px; background: #1a1a20; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); position: relative; }
+        .hp-bar-fill { height: 100%; background: linear-gradient(90deg, #ff2a5f, #a8002a); width: 100%; transition: width 0.15s ease; }
+        .hp-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.7rem; font-weight: 700; }
+        .dialogue-box { position: relative; z-index: 10; width: 92%; margin: 0 auto 20px auto; background: rgba(10, 12, 22, 0.94); border: 2px solid #ff2a5f; border-radius: 8px; padding: 20px; min-height: 110px; display: flex; flex-direction: column; justify-content: space-between; }
+        .name-tag { position: absolute; top: -18px; left: 20px; background: linear-gradient(90deg, #ff2a5f 0%, #a8002a 100%); color: #fff; font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.95rem; padding: 4px 18px; border-radius: 4px; text-transform: uppercase; }
+        .boss-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+        .atk-btn { background: rgba(255, 42, 95, 0.15); border: 1px solid #ff2a5f; color: #fff; padding: 10px; border-radius: 6px; font-family: inherit; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+        .atk-btn:hover:not(:disabled) { background: #ff2a5f; color: #000; }
+        .atk-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .back-btn { position: absolute; top: 15px; right: 15px; z-index: 30; background: rgba(0, 0, 0, 0.8); border: 1px solid #ff2a5f; color: #a1a1aa; padding: 8px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+        .qte-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.88); z-index: 100; flex-direction: column; align-items: center; justify-content: center; gap: 16px; backdrop-filter: blur(5px); padding: 20px; }
+        .qte-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; max-width: 400px; }
+        .qte-opt-btn { background: rgba(0, 210, 255, 0.15); border: 1px solid #00d2ff; color: #fff; padding: 12px; border-radius: 8px; font-family: inherit; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+        .qte-opt-btn:hover { background: #00d2ff; color: #000; }
+    </style>
+</head>
+<body>
+    <div class="vn-container">
+        <button class="back-btn" onclick="window.location.href='index.html'">Return to Main Game</button>
+        <div class="vn-bg"></div>
+
+        <div class="qte-overlay" id="qte-overlay">
+            <h2 style="color:#ff2a5f; font-family:'Cinzel', serif;" id="qte-warning-text">SUKUNA PREPARES MALEVOLENT SHRINE IN SHIBUYA!</h2>
+            <div style="font-size:0.85rem; color:#a1a1aa;">RECLAIM YOUR INNER WILL TO PREVENT TOTAL DESTRUCTION!</div>
+            <div class="qte-options">
+                <button class="qte-opt-btn" onclick="resolveQTE('will')"><i class="fa-solid fa-fire-flame-curved"></i> Surge Inner Consciousness</button>
+                <button class="qte-opt-btn" onclick="resolveQTE('suppress')"><i class="fa-solid fa-lock"></i> Suppress Domain Expansion</button>
+                <button class="qte-opt-btn" onclick="resolveQTE('divergent')"><i class="fa-solid fa-hand-fist"></i> Divergent Soul Strike</button>
+                <button class="qte-opt-btn" onclick="resolveQTE('rct')"><i class="fa-solid fa-heart-pulse"></i> Focus Soul Healing</button>
+            </div>
+        </div>
+
+        <div class="boss-ui">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="color:#ff2a5f; font-family:'Cinzel', serif;">Ryomen Sukuna (15 Fingers - Shibuya Trial)</strong>
+                <span id="player-hp-display" style="color:#10b981; font-weight:700;">Yuji Soul HP: 100 / 100</span>
+            </div>
+            <div class="hp-bar-container">
+                <div class="hp-bar-fill" id="boss-hp-fill"></div>
+                <div class="hp-text" id="boss-hp-text">500,000 / 500,000 HP</div>
+            </div>
+        </div>
+
+        <div class="dialogue-box">
+            <div class="name-tag">Ryomen Sukuna</div>
+            <div id="dialogue-text" style="font-size:1.05rem; font-weight:600; color:#f4f4f5;">
+                "Look at Shibuya burning, brat! You are a passenger in your own body now!"
+            </div>
+            <div class="boss-controls">
+                <button class="atk-btn" id="btn-punch" onclick="playerAttack(15000, 'Soul Strike')">Soul Strike (15k DMG)</button>
+                <button class="atk-btn" id="btn-divergent" onclick="playerAttack(40000, 'Divergent Soul Fist')">Divergent Soul Fist (40k DMG)</button>
+                <button class="atk-btn" id="btn-blackflash" onclick="playerAttack(100000, 'BLACK FLASH RECLAIM')">BLACK FLASH (100k DMG)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let bossHp = 500000;
+        let bossMaxHp = 500000;
+        let playerHp = 100;
+        let isBusy = false;
+        let correctOption = "";
+        let qteTimer = null;
+
+        function formatNum(num) { return num >= 1000 ? (num/1000).toFixed(1) + 'k' : Math.floor(num); }
+
+        function updateUI() {
+            const pct = Math.max(0, (bossHp / bossMaxHp) * 100);
+            document.getElementById('boss-hp-fill').style.width = `${pct}%`;
+            document.getElementById('boss-hp-text').innerText = `${formatNum(Math.max(0, bossHp))} / ${formatNum(bossMaxHp)} HP`;
+            document.getElementById('player-hp-display').innerText = `Yuji Soul HP: ${Math.max(0, playerHp)} / 100`;
+        }
+
+        function playerAttack(dmg, moveName) {
+            if (isBusy) return;
+            isBusy = true;
+            bossHp -= dmg;
+            document.getElementById('dialogue-text').innerText = `You fought back with ${moveName} for ${formatNum(dmg)} DMG!`;
+            updateUI();
+
+            if (bossHp <= 0) {
+                alert("CONSCIOUSNESS RECLAIMED! You wrestled control back from Sukuna and halted his devastation!");
+                window.location.href = "index.html";
+            } else {
+                setTimeout(triggerSukunaCounter, 800);
+            }
+        }
+
+        const qteAttacks = [
+            { text: "SUKUNA UNLEASHES DISMANTLE ACROSS SHIBUYA!", correct: "suppress" },
+            { text: "SUKUNA PREPARES FIRE ARROW (FUGA)!", correct: "will" },
+            { text: "SUKUNA TRIES TO CRUSH YOUR SOUL INNATE DOMAIN!", correct: "divergent" }
+        ];
+
+        function triggerSukunaCounter() {
+            const randAtk = qteAttacks[Math.floor(Math.random() * qteAttacks.length)];
+            correctOption = randAtk.correct;
+            document.getElementById('qte-warning-text').innerText = randAtk.text;
+            document.getElementById('qte-overlay').style.display = "flex";
+
+            qteTimer = setTimeout(() => resolveQTE("TIMEOUT"), 2000);
+        }
+
+        function resolveQTE(chosen) {
+            if (qteTimer) clearTimeout(qteTimer);
+            document.getElementById('qte-overlay').style.display = "none";
+
+            if (chosen === correctOption) {
+                document.getElementById('dialogue-text').innerText = "WILLPOWER SUCCESS! You neutralized Sukuna's assault!";
+            } else {
+                playerHp -= 35;
+                document.getElementById('dialogue-text').innerText = "SOUL DAMAGE TAKEN! Sukuna breached your soul defense! (-35 HP)";
+                if (playerHp <= 0) {
+                    alert("Your spirit collapsed! Recovering soul strength...");
+                    playerHp = 100;
+                }
+            }
+            isBusy = false;
+            updateUI();
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
