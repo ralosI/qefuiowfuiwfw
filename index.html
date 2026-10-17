@@ -9,15 +9,15 @@
     
     <style>
         :root {
-            --bg-dark: #09090b;
-            --panel-bg: #121216;
+            --bg-dark: #050508;
+            --panel-bg: rgba(10, 12, 22, 0.92);
             --border-color: #27272a;
             --ce-blue: #00d2ff;
             --ce-glow: rgba(0, 210, 255, 0.4);
             --sukuna-red: #ff2a5f;
             --sukuna-glow: rgba(255, 42, 95, 0.4);
             --gold: #f59e0b;
-            --purple: #a855f7;
+            --green: #10b981;
             --text-main: #f4f4f5;
             --text-muted: #a1a1aa;
         }
@@ -71,6 +71,12 @@
             gap: 8px;
         }
 
+        .top-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .finger-count {
             background: rgba(255, 42, 95, 0.15);
             border: 1px solid var(--sukuna-red);
@@ -79,6 +85,14 @@
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 700;
+        }
+
+        .save-indicator {
+            font-size: 0.75rem;
+            color: var(--green);
+            font-weight: 700;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .stats-grid {
@@ -137,7 +151,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 24px 0;
+            padding: 20px 0;
             position: relative;
         }
 
@@ -165,7 +179,7 @@
         }
 
         .strike-hint {
-            margin-top: 12px;
+            margin-top: 10px;
             font-size: 0.85rem;
             color: var(--text-muted);
             letter-spacing: 1px;
@@ -434,7 +448,7 @@
             color: var(--ce-blue);
         }
 
-        /* SHOP TAB & WEAPONS */
+        /* SHOP TAB & INDEX */
         .shop-controls {
             display: flex;
             justify-content: space-between;
@@ -457,7 +471,7 @@
             margin-bottom: 12px;
         }
 
-        .shop-grid {
+        .shop-grid, .index-grid {
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -587,8 +601,11 @@
             <div class="user-title">
                 <i class="fa-solid fa-fist-raised"></i> Yuji Itadori
             </div>
-            <div class="finger-count" id="finger-container">
-                <i class="fa-solid fa-joint"></i> Sukuna Fingers: <span id="finger-val">0</span>
+            <div class="top-status">
+                <span class="save-indicator" id="save-indicator"><i class="fa-solid fa-floppy-disk"></i> SAVED</span>
+                <div class="finger-count" id="finger-container">
+                    <i class="fa-solid fa-joint"></i> Sukuna Fingers: <span id="finger-val">0</span>
+                </div>
             </div>
         </div>
         <div class="stats-grid">
@@ -597,7 +614,7 @@
                 <div class="stat-value" style="color: var(--ce-blue)" id="ce-val">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Physical Power</div>
+                <div class="stat-label">Total Power</div>
                 <div class="stat-value" style="color: #38bdf8" id="power-val">1</div>
             </div>
             <div class="stat-card">
@@ -731,19 +748,27 @@
             </div>
         </div>
 
-        <!-- 3. SHOP TAB -->
+        <!-- 3. SHOP & WEAPON INDEX TAB -->
         <div id="tab-shop" class="tab-content">
-            <div class="section-title">
-                <span>Cursed Armory Shop</span>
-                <i class="fa-solid fa-store" style="color: var(--gold);"></i>
-            </div>
-
             <div class="equipped-banner">
                 <div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Currently Equipped</div>
-                    <strong id="equipped-name" style="font-size: 1rem; color: var(--ce-blue);">Bare Fists (+0 DMG)</strong>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Currently Equipped Weapon</div>
+                    <strong id="equipped-name" style="font-size: 1rem; color: var(--ce-blue);">Bare Fists (+0 Physical Power)</strong>
                 </div>
                 <i class="fa-solid fa-shield-halved" style="font-size: 1.5rem; color: var(--ce-blue);"></i>
+            </div>
+
+            <div class="section-title">
+                <span>Owned Weapon Index</span>
+                <i class="fa-solid fa-book-bookmark" style="color: var(--ce-blue);"></i>
+            </div>
+            <div class="index-grid" id="owned-weapons-index">
+                <!-- Owned Weapons Injected via JS -->
+            </div>
+
+            <div class="section-title" style="margin-top: 15px;">
+                <span>Cursed Armory Shop</span>
+                <i class="fa-solid fa-store" style="color: var(--gold);"></i>
             </div>
 
             <div class="shop-controls">
@@ -755,7 +780,7 @@
                 <!-- Shop items injected via JS -->
             </div>
 
-            <div class="section-title" style="margin-top: 20px;">
+            <div class="section-title" style="margin-top: 15px;">
                 <span>Calamity Grade Boss Trials</span>
                 <i class="fa-solid fa-skull" style="color: var(--sukuna-red);"></i>
             </div>
@@ -763,14 +788,19 @@
             <div class="story-card" style="border-color: var(--sukuna-red);">
                 <div class="story-header">
                     <span class="story-title" style="color: var(--sukuna-red);">Trial of Toji Fushiguro</span>
-                    <span style="font-size: 0.75rem; color: var(--gold);">Unlocks Calamity Weapons</span>
+                    <span style="font-size: 0.75rem; color: var(--gold);" id="toji-status-badge">Locked Calamity Weapons</span>
                 </div>
-                <div style="font-size: 0.8rem; color: var(--text-muted);">Face the Sorcerer Killer Toji Fushiguro in mortal combat to claim Playful Cloud, Inverted Spear of Heaven, and Split Soul Katana!</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Defeat Toji Fushiguro (100,000 HP) in tactical combat to permanently add Playful Cloud, Inverted Spear of Heaven, and Split Soul Katana to your Index!</div>
                 <div style="margin-top: 8px;">
-                    <a href="toji_boss.html" target="_blank" class="buy-btn" style="border-color: var(--sukuna-red); color: var(--sukuna-red);">
+                    <a href="toji_boss.html" class="buy-btn" style="border-color: var(--sukuna-red); color: var(--sukuna-red);">
                         <i class="fa-solid fa-skull"></i> Challenge Toji Boss
                     </a>
                 </div>
+            </div>
+
+            <div class="shop-controls" style="margin-top: 15px; border-color: rgba(255,255,255,0.1);">
+                <button class="buy-btn" id="manual-save-btn" style="border-color:#10b981; color:#10b981;">Save Game Data</button>
+                <button class="buy-btn" id="reset-save-btn" style="border-color:var(--sukuna-red); color:var(--sukuna-red);">Reset Save</button>
             </div>
         </div>
 
@@ -788,7 +818,7 @@
                     </div>
                     <div style="font-size: 0.8rem; color: var(--text-muted);">Sugisawa High, the Occult Club, and swallowing Sukuna's finger.</div>
                     <div style="margin-top: 6px;">
-                        <a href="story1.html" target="_blank" class="buy-btn"><i class="fa-solid fa-book-open"></i> Read Chapter 1</a>
+                        <a href="story1.html" class="buy-btn"><i class="fa-solid fa-book-open"></i> Read Chapter 1</a>
                     </div>
                 </div>
 
@@ -798,7 +828,7 @@
                     </div>
                     <div style="font-size: 0.8rem; color: var(--text-muted);">The Detention Center mission and confronting the special grade cursed womb.</div>
                     <div style="margin-top: 6px;">
-                        <a href="story2.html" target="_blank" class="buy-btn"><i class="fa-solid fa-book-open"></i> Read Chapter 2</a>
+                        <a href="story2.html" class="buy-btn"><i class="fa-solid fa-book-open"></i> Read Chapter 2</a>
                     </div>
                 </div>
 
@@ -808,7 +838,7 @@
                     </div>
                     <div style="font-size: 0.8rem; color: var(--text-muted);">Training with Aoi Todo and unlocking the legendary Black Flash.</div>
                     <div style="margin-top: 6px;">
-                        <a href="story3.html" target="_blank" class="buy-btn"><i class="fa-solid fa-book-open"></i> Read Chapter 3</a>
+                        <a href="story3.html" class="buy-btn"><i class="fa-solid fa-book-open"></i> Read Chapter 3</a>
                     </div>
                 </div>
             </div>
@@ -826,7 +856,7 @@
         </button>
         <button class="nav-btn" data-tab="tab-shop">
             <i class="fa-solid fa-store"></i>
-            <span>Shop</span>
+            <span>Armory Index</span>
         </button>
         <button class="nav-btn" data-tab="tab-story">
             <i class="fa-solid fa-scroll"></i>
@@ -835,45 +865,83 @@
     </nav>
 
     <script>
-        const state = {
+        const defaultState = {
             ce: 0, maxCe: 100, power: 1, shards: 0, fingers: 0, multiplier: 1, critChance: 0.05, autoCeRate: 0,
             upg1Level: 0, upg2Level: 0, upg3Level: 0,
             playerHp: 100, playerMaxHp: 100,
             currentEnemy: null, enemyHp: 10, enemyMaxHp: 10,
             isTurnBusy: false, qteTimer: null, dodgedSuccessfully: false,
-            equippedWeapon: { name: "Bare Fists", bonusDmg: 0, rarity: "common" },
+            equippedWeapon: { id: "fists", name: "Bare Fists", bonusPower: 0, rarity: "common" },
+            ownedWeapons: [
+                { id: "fists", name: "Bare Fists", bonusPower: 0, rarity: "common" }
+            ],
+            tojiDefeated: false,
             shopInventory: []
         };
 
+        let state = JSON.parse(JSON.stringify(defaultState));
+
+        const calamityWeapons = [
+            { id: "playful_cloud", name: "Playful Cloud (Three-Section Staff)", rarity: "calamity", cost: 0, bonusPower: 8000 },
+            { id: "isoh", name: "Inverted Spear of Heaven", rarity: "calamity", cost: 0, bonusPower: 18000 },
+            { id: "split_soul", name: "Split Soul Katana", rarity: "calamity", cost: 0, bonusPower: 35000 }
+        ];
+
         const weaponDatabase = [
-            // Common (10-30 Shards)
-            { name: "Wooden Practice Dagger", rarity: "common", cost: 15, bonusDmg: 5 },
-            { name: "Brass Knuckles", rarity: "common", cost: 25, bonusDmg: 10 },
-            // Uncommon (30-70 Shards)
-            { name: "Slaughter Demon Knife", rarity: "uncommon", cost: 45, bonusDmg: 25 },
-            { name: "Steel Tanto", rarity: "uncommon", cost: 65, bonusDmg: 40 },
-            // Rare (70-500 Shards)
-            { name: "Sorcerer Staff", rarity: "rare", cost: 150, bonusDmg: 100 },
-            { name: "Cursed Katana", rarity: "rare", cost: 350, bonusDmg: 250 },
-            // Epic (500-2500 Shards)
-            { name: "Dragon-Bone Blade", rarity: "epic", cost: 1200, bonusDmg: 800 },
-            { name: "Black Rope Whip", rarity: "epic", cost: 2200, bonusDmg: 1500 },
-            // Legendary (2500-10000 Shards)
-            { name: "Supreme Grade Scythe", rarity: "legendary", cost: 5000, bonusDmg: 4000 },
-            { name: "Executioner's Sword", rarity: "legendary", cost: 9000, bonusDmg: 8500 }
+            { id: "wooden_dagger", name: "Wooden Practice Dagger", rarity: "common", cost: 20, bonusPower: 5 },
+            { id: "brass_knuckles", name: "Brass Knuckles", rarity: "common", cost: 30, bonusPower: 12 },
+            { id: "slaughter_demon", name: "Slaughter Demon Knife", rarity: "uncommon", cost: 60, bonusPower: 30 },
+            { id: "steel_tanto", name: "Steel Tanto", rarity: "uncommon", cost: 70, bonusPower: 50 },
+            { id: "sorcerer_staff", name: "Sorcerer Staff", rarity: "rare", cost: 200, bonusPower: 150 },
+            { id: "cursed_katana", name: "Cursed Katana", rarity: "rare", cost: 450, bonusPower: 350 },
+            { id: "dragon_bone", name: "Dragon-Bone Blade", rarity: "epic", cost: 1500, bonusPower: 1000 },
+            { id: "black_rope", name: "Black Rope Whip", rarity: "epic", cost: 2500, bonusPower: 2000 },
+            { id: "supreme_scythe", name: "Supreme Grade Scythe", rarity: "legendary", cost: 6000, bonusPower: 5000 },
+            { id: "executioners_sword", name: "Executioner's Sword", rarity: "legendary", cost: 10000, bonusPower: 9000 }
         ];
 
+        // SCALED ENEMY POOL (High HP for balanced weapon scaling)
         const enemyPool = [
-            { name: "Fly Head Curse", grade: "Grade 4", hpMult: 1, atk: 10, ceReward: 10, shardReward: 3, icon: "fa-ghost" },
-            { name: "Roppongi Crawling Curse", grade: "Grade 3", hpMult: 2.5, atk: 18, ceReward: 25, shardReward: 8, icon: "fa-bug" },
-            { name: "Rugby Field Monster", grade: "Grade 2", hpMult: 6, atk: 30, ceReward: 60, shardReward: 20, icon: "fa-spaghetti-monster-flying" },
-            { name: "Grasshopper Curse", grade: "Grade 1", hpMult: 15, atk: 45, ceReward: 150, shardReward: 50, icon: "fa-locust" },
-            { name: "Detention Center Finger Bearer", grade: "Special Grade", hpMult: 40, atk: 70, ceReward: 400, shardReward: 150, icon: "fa-skull-crossbones" },
-            { name: "Mahito (Unregistered)", grade: "Special Grade", hpMult: 100, atk: 110, ceReward: 1000, shardReward: 400, icon: "fa-mask" },
-            { name: "Jogo (Disaster Curse)", grade: "Special Grade", hpMult: 250, atk: 180, ceReward: 2500, shardReward: 1000, icon: "fa-fire" }
+            { name: "Fly Head Curse", grade: "Grade 4", hpMult: 1, atk: 10, ceReward: 10, shardReward: 5, icon: "fa-ghost" },
+            { name: "Roppongi Crawling Curse", grade: "Grade 3", hpMult: 3, atk: 18, ceReward: 25, shardReward: 12, icon: "fa-bug" },
+            { name: "Rugby Field Monster", grade: "Grade 2", hpMult: 10, atk: 30, ceReward: 60, shardReward: 30, icon: "fa-spaghetti-monster-flying" },
+            { name: "Grasshopper Curse", grade: "Grade 1", hpMult: 50, atk: 45, ceReward: 150, shardReward: 80, icon: "fa-locust" },
+            { name: "Detention Center Finger Bearer", grade: "Special Grade", hpMult: 500, atk: 70, ceReward: 500, shardReward: 200, icon: "fa-skull-crossbones" },
+            { name: "Mahito (Unregistered)", grade: "Special Grade", hpMult: 5000, atk: 110, ceReward: 1500, shardReward: 500, icon: "fa-mask" },
+            { name: "Jogo (Disaster Curse)", grade: "Special Grade", hpMult: 25000, atk: 180, ceReward: 3500, shardReward: 1200, icon: "fa-fire" },
+            { name: "Sukuna (15 Fingers)", grade: "Special Grade", hpMult: 100000, atk: 250, ceReward: 10000, shardReward: 3000, icon: "fa-crown" }
         ];
 
-        // NAV BAR EVENT LISTENERS
+        function getTotalPower() {
+            return (state.power + state.equippedWeapon.bonusPower) * state.multiplier;
+        }
+
+        function saveGame() {
+            localStorage.setItem('jjk_yuji_save', JSON.stringify(state));
+            const ind = document.getElementById('save-indicator');
+            ind.style.opacity = "1";
+            setTimeout(() => { ind.style.opacity = "0"; }, 1500);
+        }
+
+        function loadGame() {
+            const saved = localStorage.getItem('jjk_yuji_save');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    state = { ...defaultState, ...parsed };
+                } catch(e) { console.error(e); }
+            }
+
+            if (localStorage.getItem('jjk_toji_defeated') === 'true') {
+                state.tojiDefeated = true;
+                calamityWeapons.forEach(cw => {
+                    if (!state.ownedWeapons.some(w => w.id === cw.id)) {
+                        state.ownedWeapons.push(cw);
+                    }
+                });
+            }
+        }
+
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -924,37 +992,80 @@
         }
 
         function refreshShopInventory() {
-            const shuffled = [...weaponDatabase].sort(() => 0.5 - Math.random());
+            const unowned = weaponDatabase.filter(w => !state.ownedWeapons.some(o => o.id === w.id));
+            const shuffled = [...unowned].sort(() => 0.5 - Math.random());
             state.shopInventory = shuffled.slice(0, 4);
-            renderShop();
+            renderShopAndIndex();
         }
 
-        function renderShop() {
-            const container = document.getElementById('shop-items-list');
-            container.innerHTML = '';
+        function renderShopAndIndex() {
+            const indexContainer = document.getElementById('owned-weapons-index');
+            indexContainer.innerHTML = '';
 
-            state.shopInventory.forEach((wpn, idx) => {
+            state.ownedWeapons.forEach(wpn => {
+                const isEquipped = state.equippedWeapon.id === wpn.id;
                 const card = document.createElement('div');
                 card.className = `weapon-card rarity-${wpn.rarity}`;
                 card.innerHTML = `
                     <div>
                         <strong style="font-size:0.95rem;">${wpn.name}</strong>
-                        <div style="font-size:0.75rem; color: var(--text-muted);">+${wpn.bonusDmg} Base Damage (${wpn.rarity.toUpperCase()})</div>
+                        <div style="font-size:0.75rem; color: var(--text-muted);">+${formatNum(wpn.bonusPower)} Physical Power (${wpn.rarity.toUpperCase()})</div>
                     </div>
-                    <button class="buy-btn" onclick="buyWeapon(${idx})">Buy: ${wpn.cost} Shards</button>
+                    <button class="buy-btn" onclick="equipWeapon('${wpn.id}')" ${isEquipped ? 'disabled' : ''}>
+                        ${isEquipped ? 'Equipped' : 'Equip'}
+                    </button>
                 `;
-                container.appendChild(card);
+                indexContainer.appendChild(card);
             });
+
+            const shopContainer = document.getElementById('shop-items-list');
+            shopContainer.innerHTML = '';
+
+            if (state.shopInventory.length === 0) {
+                shopContainer.innerHTML = '<div style="font-size:0.85rem; color:var(--text-muted); padding:10px;">All shop weapons purchased!</div>';
+            } else {
+                state.shopInventory.forEach((wpn, idx) => {
+                    const card = document.createElement('div');
+                    card.className = `weapon-card rarity-${wpn.rarity}`;
+                    card.innerHTML = `
+                        <div>
+                            <strong style="font-size:0.95rem;">${wpn.name}</strong>
+                            <div style="font-size:0.75rem; color: var(--text-muted);">+${formatNum(wpn.bonusPower)} Physical Power (${wpn.rarity.toUpperCase()})</div>
+                        </div>
+                        <button class="buy-btn" onclick="buyWeapon(${idx})">Buy: ${wpn.cost} Shards</button>
+                    `;
+                    shopContainer.appendChild(card);
+                });
+            }
+
+            const badge = document.getElementById('toji-status-badge');
+            if (state.tojiDefeated) {
+                badge.innerText = "CALAMITY WEAPONS UNLOCKED";
+                badge.style.color = "var(--green)";
+            }
         }
+
+        window.equipWeapon = function(id) {
+            const found = state.ownedWeapons.find(w => w.id === id);
+            if (found) {
+                state.equippedWeapon = found;
+                document.getElementById('equipped-name').innerText = `${found.name} (+${formatNum(found.bonusPower)} Power)`;
+                renderShopAndIndex();
+                updateUI();
+                saveGame();
+            }
+        };
 
         window.buyWeapon = function(idx) {
             const wpn = state.shopInventory[idx];
             if (state.shards >= wpn.cost) {
                 state.shards -= wpn.cost;
+                state.ownedWeapons.push(wpn);
                 state.equippedWeapon = wpn;
-                document.getElementById('equipped-name').innerText = `${wpn.name} (+${wpn.bonusDmg} DMG)`;
+                document.getElementById('equipped-name').innerText = `${wpn.name} (+${formatNum(wpn.bonusPower)} Power)`;
+                refreshShopInventory();
                 updateUI();
-                alert(`Equipped ${wpn.name}!`);
+                saveGame();
             } else {
                 alert("Not enough Soul Shards!");
             }
@@ -965,14 +1076,28 @@
                 state.shards -= 10;
                 refreshShopInventory();
                 updateUI();
+                saveGame();
             } else {
                 alert("Requires 10 Soul Shards to refresh!");
             }
         });
 
+        document.getElementById('manual-save-btn').addEventListener('click', () => {
+            saveGame();
+            alert("Game Progress Saved!");
+        });
+
+        document.getElementById('reset-save-btn').addEventListener('click', () => {
+            if (confirm("Reset ALL game progress? This cannot be undone!")) {
+                localStorage.removeItem('jjk_yuji_save');
+                localStorage.removeItem('jjk_toji_defeated');
+                location.reload();
+            }
+        });
+
         function updateUI() {
             document.getElementById('ce-val').innerText = formatNum(state.ce);
-            document.getElementById('power-val').innerText = formatNum(state.power * state.multiplier);
+            document.getElementById('power-val').innerText = formatNum(getTotalPower());
             document.getElementById('shards-val').innerText = formatNum(state.shards);
             document.getElementById('finger-val').innerText = state.fingers;
 
@@ -1010,6 +1135,8 @@
             document.getElementById('combat-ce-fill').style.width = `${combatCePercent}%`;
             document.getElementById('combat-ce-text').innerText = `${formatNum(state.ce)} / ${state.maxCe} CE`;
 
+            document.getElementById('equipped-name').innerText = `${state.equippedWeapon.name} (+${formatNum(state.equippedWeapon.bonusPower)} Power)`;
+
             const busy = state.isTurnBusy;
             document.getElementById('move-punch').disabled = busy;
             document.getElementById('move-strike').disabled = busy || state.ce < 20;
@@ -1019,7 +1146,7 @@
 
         document.getElementById('strike-btn').addEventListener('click', (e) => {
             const isCrit = Math.random() < state.critChance;
-            let gain = state.power * state.multiplier;
+            let gain = getTotalPower();
             if (isCrit) {
                 gain *= 2.5;
                 triggerBlackFlash();
@@ -1033,15 +1160,15 @@
 
         document.getElementById('buy-upg-1').addEventListener('click', () => {
             const cost = Math.floor(15 * Math.pow(1.5, state.upg1Level));
-            if (state.ce >= cost) { state.ce -= cost; state.power += 1; state.upg1Level++; updateUI(); }
+            if (state.ce >= cost) { state.ce -= cost; state.power += 1; state.upg1Level++; updateUI(); saveGame(); }
         });
         document.getElementById('buy-upg-2').addEventListener('click', () => {
             const cost = Math.floor(50 * Math.pow(1.6, state.upg2Level));
-            if (state.ce >= cost) { state.ce -= cost; state.autoCeRate += 1; state.upg2Level++; updateUI(); }
+            if (state.ce >= cost) { state.ce -= cost; state.autoCeRate += 1; state.upg2Level++; updateUI(); saveGame(); }
         });
         document.getElementById('buy-upg-3').addEventListener('click', () => {
             const cost = Math.floor(200 * Math.pow(2.0, state.upg3Level));
-            if (state.ce >= cost) { state.ce -= cost; state.critChance += 0.05; state.upg3Level++; updateUI(); }
+            if (state.ce >= cost) { state.ce -= cost; state.critChance += 0.05; state.upg3Level++; updateUI(); saveGame(); }
         });
 
         document.getElementById('prestige-btn').addEventListener('click', () => {
@@ -1051,6 +1178,7 @@
                 state.multiplier += 0.5;
                 state.ce = 0; state.power = 1; state.upg1Level = 0; state.upg2Level = 0; state.upg3Level = 0; state.autoCeRate = 0;
                 updateUI();
+                saveGame();
             }
         });
 
@@ -1062,8 +1190,7 @@
             if (restoresCe) state.ce += restoresCe;
 
             const isCrit = Math.random() < state.critChance;
-            let baseAtk = (state.power * state.multiplier) + state.equippedWeapon.bonusDmg;
-            let dmg = baseAtk * multiplier;
+            let dmg = getTotalPower() * multiplier;
 
             if (isCrit) {
                 dmg *= 2.5;
@@ -1131,10 +1258,13 @@
         setInterval(() => {
             if (state.autoCeRate > 0) state.ce += state.autoCeRate * state.multiplier;
             updateUI();
-        }, 1000);
+            saveGame();
+        }, 5000);
 
+        loadGame();
         spawnRandomEnemy();
-        refreshShopInventory();
+        if (state.shopInventory.length === 0) refreshShopInventory();
+        renderShopAndIndex();
         updateUI();
     </script>
 </body>
