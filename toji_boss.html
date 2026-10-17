@@ -174,41 +174,68 @@
             text-decoration: none;
             font-size: 0.85rem;
             font-weight: 700;
+            cursor: pointer;
         }
 
+        /* TACTICAL MULTI-CHOICE COUNTER QTE OVERLAY */
         .qte-overlay {
             display: none;
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.88);
             z-index: 100;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 16px;
+            backdrop-filter: blur(5px);
+            padding: 20px;
         }
 
-        .dodge-btn {
+        .qte-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .qte-opt-btn {
+            background: rgba(0, 210, 255, 0.15);
+            border: 1px solid #00d2ff;
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .qte-opt-btn:hover {
             background: #00d2ff;
             color: #000;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 30px;
-            font-weight: 800;
-            font-size: 1.1rem;
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
     <div class="vn-container">
-        <a href="index.html" class="back-btn"><i class="fa-solid fa-xmark"></i> Leave Trial</a>
+        <button class="back-btn" id="return-main-btn"><i class="fa-solid fa-arrow-left"></i> Return to Main Game</button>
         <div class="vn-bg"></div>
 
+        <!-- Tactical QTE Counter Attack Overlay -->
         <div class="qte-overlay" id="qte-overlay">
-            <h2 style="color:#ff2a5f; font-family:'Cinzel', serif;">TOJI ATTACKING!</h2>
-            <button class="dodge-btn" id="dodge-btn">CLICK TO DODGE!</button>
+            <h2 style="color:#ff2a5f; font-family:'Cinzel', serif;" id="qte-warning-text">TOJI IS DASHING AT INHUMAN SPEED!</h2>
+            <div style="font-size:0.85rem; color:#a1a1aa;">SELECT THE CORRECT TACTICAL COUNTER-ACTION!</div>
+            
+            <div class="qte-options">
+                <button class="qte-opt-btn" onclick="resolveQTE('reinforce')"><i class="fa-solid fa-shield"></i> Cursed Reinforcement</button>
+                <button class="qte-opt-btn" onclick="resolveQTE('rct')"><i class="fa-solid fa-heart-pulse"></i> Focus Reverse Cursed Technique</button>
+                <button class="qte-opt-btn" onclick="resolveQTE('environment')"><i class="fa-solid fa-cubes"></i> Throw Debris / Use Environment</button>
+                <button class="qte-opt-btn" onclick="resolveQTE('parry')"><i class="fa-solid fa-hand-fist"></i> Cross-Arm Body Block</button>
+            </div>
         </div>
 
         <div class="boss-ui">
@@ -218,7 +245,7 @@
             </div>
             <div class="hp-bar-container">
                 <div class="hp-bar-fill" id="boss-hp-fill"></div>
-                <div class="hp-text" id="boss-hp-text">1,000 / 1,000 HP</div>
+                <div class="hp-text" id="boss-hp-text">100,000 / 100,000 HP</div>
             </div>
         </div>
 
@@ -232,9 +259,9 @@
                 "You sorcerers are all the same. Show me what you've got, kid."
             </div>
             <div class="boss-controls">
-                <button class="atk-btn" id="btn-punch">Punch (50 DMG)</button>
-                <button class="atk-btn" id="btn-divergent">Divergent Fist (120 DMG)</button>
-                <button class="atk-btn" id="btn-blackflash">Black Flash (300 DMG)</button>
+                <button class="atk-btn" id="btn-punch">Punch (2,500 DMG)</button>
+                <button class="atk-btn" id="btn-divergent">Divergent Fist (8,000 DMG)</button>
+                <button class="atk-btn" id="btn-blackflash">Black Flash (20,000 DMG)</button>
             </div>
         </div>
     </div>
@@ -243,20 +270,27 @@
         const SPRITE_IDLE = "https://static.wikia.nocookie.net/dbxfanon/images/6/6c/Toji.png/revision/latest?cb=20250223022424";
         const SPRITE_ATK = "https://static.wikia.nocookie.net/villains/images/b/be/Toji_Fushiguro_Infobox.png/revision/latest?cb=20251009152249";
 
-        let bossHp = 1000;
-        let bossMaxHp = 1000;
+        let bossHp = 100000;
+        let bossMaxHp = 100000;
         let playerHp = 100;
         let isBusy = false;
+        let correctOption = "";
         let qteTimer = null;
 
         const spriteEl = document.getElementById('toji-sprite');
         const dialogueEl = document.getElementById('dialogue-text');
         const qteOverlay = document.getElementById('qte-overlay');
 
+        function formatNum(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+            return Math.floor(num);
+        }
+
         function updateUI() {
             const hpPct = Math.max(0, (bossHp / bossMaxHp) * 100);
             document.getElementById('boss-hp-fill').style.width = `${hpPct}%`;
-            document.getElementById('boss-hp-text').innerText = `${Math.max(0, bossHp)} / ${bossMaxHp} HP`;
+            document.getElementById('boss-hp-text').innerText = `${formatNum(Math.max(0, bossHp))} / ${formatNum(bossMaxHp)} HP`;
             document.getElementById('player-hp-display').innerText = `Yuji HP: ${Math.max(0, playerHp)} / 100`;
 
             document.getElementById('btn-punch').disabled = isBusy;
@@ -269,52 +303,63 @@
             isBusy = true;
 
             bossHp -= dmg;
-            dialogueEl.innerText = `You hit Toji with ${moveName} for ${dmg} DMG!`;
+            dialogueEl.innerText = `You struck Toji with ${moveName} for ${formatNum(dmg)} DMG!`;
             updateUI();
 
             if (bossHp <= 0) {
-                alert("CONGRATULATIONS! You defeated Toji Fushiguro!\nUnlocked Calamity Grade Weapons in Armory Shop!");
+                localStorage.setItem('jjk_toji_defeated', 'true');
+                alert("CONGRATULATIONS! You defeated Toji Fushiguro!\nPlayful Cloud, Inverted Spear of Heaven, and Split Soul Katana unlocked in your Index!");
                 window.location.href = "index.html";
             } else {
-                setTimeout(() => tojiCounterAttack(), 800);
+                setTimeout(() => triggerTacticalQTE(), 800);
             }
         }
 
-        function tojiCounterAttack() {
+        const qteAttacks = [
+            { text: "TOJI SWINGS PLAYFUL CLOUD WITH HIGH IMPACT!", correct: "environment" },
+            { text: "TOJI DASHES BEHIND YOU WITH INVERTED SPEAR OF HEAVEN!", correct: "reinforce" },
+            { text: "TOJI FEINTS AND DELIVERS A POWERFUL PHYSICAL KICK!", correct: "parry" },
+            { text: "TOJI SLASHES WITH SPLIT SOUL KATANA (SOUL DAMAGE)!", correct: "rct" }
+        ];
+
+        function triggerTacticalQTE() {
             spriteEl.src = SPRITE_ATK;
+            const randAtk = qteAttacks[Math.floor(Math.random() * qteAttacks.length)];
+            correctOption = randAtk.correct;
+            document.getElementById('qte-warning-text').innerText = randAtk.text;
             qteOverlay.style.display = "flex";
 
-            let dodged = false;
             qteTimer = setTimeout(() => {
-                qteOverlay.style.display = "none";
-                spriteEl.src = SPRITE_IDLE;
-
-                if (!dodged) {
-                    playerHp -= 35;
-                    dialogueEl.innerText = "Toji struck you with Inverse Spear of Heaven! (-35 HP)";
-                    if (playerHp <= 0) {
-                        alert("Toji defeated you! Recovering...");
-                        playerHp = 100;
-                    }
-                }
-                isBusy = false;
-                updateUI();
-            }, 1100);
-
-            document.getElementById('dodge-btn').onclick = () => {
-                dodged = true;
-                clearTimeout(qteTimer);
-                qteOverlay.style.display = "none";
-                spriteEl.src = SPRITE_IDLE;
-                dialogueEl.innerText = "You dodged Toji's lethal slash!";
-                isBusy = false;
-                updateUI();
-            };
+                resolveQTE("TIMEOUT");
+            }, 2000);
         }
 
-        document.getElementById('btn-punch').addEventListener('click', () => playerAttack(50, "Normal Punch"));
-        document.getElementById('btn-divergent').addEventListener('click', () => playerAttack(120, "Divergent Fist"));
-        document.getElementById('btn-blackflash').addEventListener('click', () => playerAttack(300, "BLACK FLASH"));
+        window.resolveQTE = function(chosen) {
+            if (qteTimer) clearTimeout(qteTimer);
+            qteOverlay.style.display = "none";
+            spriteEl.src = SPRITE_IDLE;
+
+            if (chosen === correctOption) {
+                dialogueEl.innerText = "TACTICAL COUNTER SUCCESSFUL! You completely mitigated Toji's lethal attack!";
+            } else {
+                playerHp -= 35;
+                dialogueEl.innerText = "TACTICAL ERROR! Toji breached your guard and dealt lethal damage! (-35 HP)";
+                if (playerHp <= 0) {
+                    alert("Toji knocked you out! Recovering health...");
+                    playerHp = 100;
+                }
+            }
+            isBusy = false;
+            updateUI();
+        };
+
+        document.getElementById('return-main-btn').addEventListener('click', () => {
+            window.location.href = "index.html";
+        });
+
+        document.getElementById('btn-punch').addEventListener('click', () => playerAttack(2500, "Normal Punch"));
+        document.getElementById('btn-divergent').addEventListener('click', () => playerAttack(8000, "Divergent Fist"));
+        document.getElementById('btn-blackflash').addEventListener('click', () => playerAttack(20000, "BLACK FLASH"));
 
         updateUI();
     </script>
