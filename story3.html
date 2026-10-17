@@ -26,13 +26,12 @@
             overflow: hidden;
         }
 
-        /* Visual Novel Main Stage */
         .vn-container {
             width: 100%;
             max-width: 900px;
             height: 100vh;
             max-height: 600px;
-            background: radial-gradient(circle at center, #1a1a24 0%, #08080c 100%);
+            background: #000;
             border: 2px solid #27272a;
             position: relative;
             display: flex;
@@ -42,18 +41,17 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.9);
         }
 
-        /* Background Location Effects */
         .vn-bg {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url('https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80');
             background-size: cover;
             background-position: center;
-            opacity: 0.25;
-            filter: blur(2px);
+            opacity: 0.5;
+            filter: brightness(0.6) contrast(1.1);
             z-index: 1;
         }
 
-        /* Character Sprite Box */
         .sprite-container {
             position: absolute;
             bottom: 110px;
@@ -73,16 +71,15 @@
             max-width: 450px;
             object-fit: contain;
             filter: drop-shadow(0 0 15px rgba(0,0,0,0.8));
-            transition: opacity 0.2s ease, transform 0.2s ease;
+            transition: opacity 0.2s ease;
         }
 
-        /* Dialogue Box */
         .dialogue-box {
             position: relative;
             z-index: 10;
             width: 92%;
             margin: 0 auto 20px auto;
-            background: rgba(10, 12, 22, 0.92);
+            background: rgba(10, 12, 22, 0.94);
             border: 2px solid #00d2ff;
             border-radius: 8px;
             padding: 22px 25px;
@@ -94,7 +91,6 @@
             justify-content: space-between;
         }
 
-        /* Name Tag Banner */
         .name-tag {
             position: absolute;
             top: -18px;
@@ -111,7 +107,6 @@
             box-shadow: 0 2px 10px rgba(0, 210, 255, 0.4);
         }
 
-        /* Dialogue Text */
         .dialogue-text {
             font-size: 1.2rem;
             font-weight: 600;
@@ -120,7 +115,6 @@
             margin-top: 5px;
         }
 
-        /* Next Pointer Prompt */
         .next-prompt {
             align-self: flex-end;
             font-size: 0.85rem;
@@ -136,13 +130,12 @@
             to { transform: translateY(5px); }
         }
 
-        /* Return Button */
         .back-btn {
             position: absolute;
             top: 15px;
             right: 15px;
             z-index: 20;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             border: 1px solid #3f3f46;
             color: #a1a1aa;
             padding: 8px 14px;
@@ -163,15 +156,12 @@
 
     <div class="vn-container">
         <a href="index.html" class="back-btn"><i class="fa-solid fa-xmark"></i> Exit Story</a>
-
         <div class="vn-bg"></div>
 
-        <!-- Character Sprite Display -->
         <div class="sprite-container">
             <img id="char-sprite" class="character-sprite" src="" alt="Character">
         </div>
 
-        <!-- Dialogue UI Box -->
         <div class="dialogue-box" id="dialogue-box">
             <div class="name-tag" id="name-tag">NAME</div>
             <div class="dialogue-text" id="dialogue-text">...</div>
@@ -183,35 +173,34 @@
     </div>
 
     <script>
-        // Character Image Assets
         const IMAGES = {
             yuji_normal: "https://static.wikia.nocookie.net/deathbattlefanon/images/9/9d/Yuji_Itadori_28Anime_2_29.png/revision/latest?cb=20220816213413",
-            yuji_serious: "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/b4bba41e-2420-42ec-8c4f-95844dd273dc/dhhtzvo-cb3e8f59-6ba0-4875-8f94-59d8a2f02100.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi9iNGJiYTQxZS0yNDIwLTQyZWMtOGM0Zi05NTg0NGRkMjczZGMvZGhodHp2by1jYjNlOGY1OS02YmEwLTQ4Tent2M2I2OC5wbmcifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdfQ.GnF0diEuFMa_lO4fYmI0WpEe_WqvbH9ucT6Xuz-hBF8",
-            todo: "https://static.wikia.nocookie.net/jujutsu-kaisen/images/7/7b/Aoi_Todo_%28Anime_2%29.png/revision/latest?cb=20240621133950",
-            hanami: "https://static.wikia.nocookie.net/jujutsu-kaisen/images/d/d8/Hanami_%28Anime_2%29.png/revision/latest?cb=20240621133850"
+            yuji_serious: "https://static.wikia.nocookie.net/p__/images/1/1d/Yuji_Itadori_%28Anime_3%29.png/revision/latest/scale-to-width/360?cb=20260330045757&path-prefix=protagonist",
+            todo_normal: "https://static.wikia.nocookie.net/jujutsu-kaisen/images/7/79/Aoi_Todo_%28Anime%29.png/revision/latest?cb=20240621022047",
+            todo_serious: "https://static.wikia.nocookie.net/versus-connections/images/b/bc/Aoi_Todo_Phantom_Parade.webp/revision/latest/scale-to-width-down/692?cb=20231224031207",
+            hanami_normal: "https://static.wikia.nocookie.net/jujutsu-kaisen/images/7/76/Hanami_%28Anime%29.png/revision/latest?cb=20210318193331",
+            hanami_serious: "https://static.wikia.nocookie.net/villains/images/d/da/Hanami.png/revision/latest?cb=20251009144926"
         };
 
-        // Story Script for Chapter 3
         const script = [
-            { speaker: "Aoi Todo", sprite: IMAGES.todo, text: "Oi... Itadori Yuji. Before we start beating each other up in this Goodwill Event, I have one question for you." },
+            { speaker: "Aoi Todo", sprite: IMAGES.todo_normal, text: "Oi... Itadori Yuji. Before we start beating each other up in this Goodwill Event, I have one question for you." },
             { speaker: "Yuji Itadori", sprite: IMAGES.yuji_normal, text: "Huh? What question?" },
-            { speaker: "Aoi Todo", sprite: IMAGES.todo, text: "What kind of girl is your type? Answer honestly, or I'll beat you half to death right here!" },
+            { speaker: "Aoi Todo", sprite: IMAGES.todo_serious, text: "What kind of girl is your type? Answer honestly, or I'll beat you half to death right here!" },
             { speaker: "Yuji Itadori", sprite: IMAGES.yuji_normal, text: "Well... if I had to say... a tall girl with a big ass! Like Jennifer Lawrence!" },
-            { speaker: "Aoi Todo", sprite: IMAGES.todo, text: "I SEE... YOU HAVE EXCELLENT TASTE! YOU ARE MY BEST FRIEND!" },
+            { speaker: "Aoi Todo", sprite: IMAGES.todo_serious, text: "I SEE... YOU HAVE EXCELLENT TASTE! YOU ARE MY BEST FRIEND!" },
             { speaker: "Yuji Itadori", sprite: IMAGES.yuji_normal, text: "Wait, best friend?! We just met!" },
-            { speaker: "Hanami", sprite: IMAGES.hanami, text: "*(A heavy, ominous cursed pressure suddenly fills the forest environment...)*" },
-            { speaker: "Aoi Todo", sprite: IMAGES.todo, text: "A Special Grade Curse invasion?! Perfect! Takada-chan is watching us from above, brother!" },
+            { speaker: "Hanami", sprite: IMAGES.hanami_normal, text: "*(A heavy, ominous cursed pressure suddenly fills the forest environment...)*" },
+            { speaker: "Aoi Todo", sprite: IMAGES.todo_serious, text: "A Special Grade Curse invasion?! Perfect! Takada-chan is watching us from above, brother!" },
             { speaker: "Yuji Itadori", sprite: IMAGES.yuji_serious, text: "This curse is super tough! My Divergent Fist isn't doing enough damage!" },
-            { speaker: "Aoi Todo", sprite: IMAGES.todo, text: "Listen to me, brother! Stop relying on Divergent Fist! You're letting your Cursed Energy lag behind your physical impact!" },
-            { speaker: "Aoi Todo", sprite: IMAGES.todo, text: "Cursed Energy and physical power are not two separate things! Align them... channel the energy within 0.000001 seconds of impact!" },
+            { speaker: "Aoi Todo", sprite: IMAGES.todo_serious, text: "Listen to me, brother! Stop relying on Divergent Fist! You're letting your Cursed Energy lag behind your physical impact!" },
+            { speaker: "Aoi Todo", sprite: IMAGES.todo_serious, text: "Cursed Energy and physical power are not two separate things! Align them... channel the energy within 0.000001 seconds of impact!" },
             { speaker: "Yuji Itadori", sprite: IMAGES.yuji_serious, text: "(Flow... don't force it. Feel the spatial distortion... right at the point of contact!)" },
-            { speaker: "Hanami", sprite: IMAGES.hanami, text: "*(Sprouts massive wooden roots to crush Yuji)*" },
+            { speaker: "Hanami", sprite: IMAGES.hanami_serious, text: "*(Sprouts massive wooden roots to crush Yuji)*" },
             { speaker: "Yuji Itadori", sprite: IMAGES.yuji_serious, text: "TAKE THIS... BLACK FLASH!" },
-            { speaker: "Aoi Todo", sprite: IMAGES.todo, text: "MAGNIFICENT! Pitch-black sparks of spatial distortion! You've stepped into the Zone, my brother!" }
+            { speaker: "Aoi Todo", sprite: IMAGES.todo_serious, text: "MAGNIFICENT! Pitch-black sparks of spatial distortion! You've stepped into the Zone, my brother!" }
         ];
 
         let currentIndex = 0;
-
         const nameTag = document.getElementById('name-tag');
         const dialogueText = document.getElementById('dialogue-text');
         const charSprite = document.getElementById('char-sprite');
