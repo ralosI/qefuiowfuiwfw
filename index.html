@@ -17,6 +17,7 @@
             --sukuna-red: #ff2a5f;
             --sukuna-glow: rgba(255, 42, 95, 0.4);
             --gold: #f59e0b;
+            --purple: #a855f7;
             --text-main: #f4f4f5;
             --text-muted: #a1a1aa;
         }
@@ -45,10 +46,10 @@
             background: rgba(18, 18, 22, 0.95);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
-            padding: 12px 16px;
+            padding: 10px 16px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             z-index: 10;
         }
@@ -141,8 +142,8 @@
         }
 
         .strike-btn {
-            width: 140px;
-            height: 140px;
+            width: 130px;
+            height: 130px;
             border-radius: 50%;
             background: radial-gradient(circle, #1a233a 0%, #0d111a 100%);
             border: 3px solid var(--ce-blue);
@@ -433,6 +434,52 @@
             color: var(--ce-blue);
         }
 
+        /* SHOP TAB & WEAPONS */
+        .shop-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .equipped-banner {
+            background: rgba(0, 210, 255, 0.08);
+            border: 1px solid var(--ce-blue);
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .shop-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .weapon-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .rarity-common { border-color: #71717a; color: #a1a1aa; }
+        .rarity-uncommon { border-color: #22c55e; color: #4ade80; }
+        .rarity-rare { border-color: #3b82f6; color: #60a5fa; }
+        .rarity-epic { border-color: #a855f7; color: #c084fc; }
+        .rarity-legendary { border-color: #f59e0b; color: #fbbf24; }
+        .rarity-calamity { border-color: #ff2a5f; color: #ff2a5f; box-shadow: 0 0 10px rgba(255, 42, 95, 0.2); }
+
         /* STORY TAB */
         .story-list {
             display: flex;
@@ -462,12 +509,12 @@
             color: var(--gold);
         }
 
-        /* NAVIGATION BAR */
+        /* 4-TAB NAVIGATION BAR */
         nav {
             background: rgba(18, 18, 22, 0.98);
             border-top: 1px solid var(--border-color);
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             height: 60px;
             box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
             z-index: 10;
@@ -483,14 +530,14 @@
             justify-content: center;
             gap: 4px;
             font-family: inherit;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 600;
             cursor: pointer;
             transition: color 0.2s ease;
         }
 
         .nav-btn i {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         .nav-btn.active {
@@ -618,7 +665,6 @@
 
         <!-- 2. COMBAT TAB -->
         <div id="tab-combat" class="tab-content active">
-
             <div class="grade-warning" id="grade-warning">
                 <i class="fa-solid fa-triangle-exclamation"></i> WARNING: DANGEROUS CURSE DETECTED!
             </div>
@@ -683,17 +729,52 @@
                     </button>
                 </div>
             </div>
+        </div>
 
+        <!-- 3. SHOP TAB -->
+        <div id="tab-shop" class="tab-content">
             <div class="section-title">
-                <span>Combat Spoils</span>
-                <i class="fa-solid fa-coins" style="color: var(--gold);"></i>
+                <span>Cursed Armory Shop</span>
+                <i class="fa-solid fa-store" style="color: var(--gold);"></i>
             </div>
-            <div style="font-size: 0.85rem; color: var(--text-muted); background: var(--panel-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
-                Turn-based combat: Choose your move, then react fast to the <strong style="color:var(--ce-blue);">DODGE QTE</strong> when the curse strikes back!
+
+            <div class="equipped-banner">
+                <div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Currently Equipped</div>
+                    <strong id="equipped-name" style="font-size: 1rem; color: var(--ce-blue);">Bare Fists (+0 DMG)</strong>
+                </div>
+                <i class="fa-solid fa-shield-halved" style="font-size: 1.5rem; color: var(--ce-blue);"></i>
+            </div>
+
+            <div class="shop-controls">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">Refresh Inventory</span>
+                <button class="buy-btn" id="refresh-shop-btn">Refresh (10 Shards)</button>
+            </div>
+
+            <div class="shop-grid" id="shop-items-list">
+                <!-- Shop items injected via JS -->
+            </div>
+
+            <div class="section-title" style="margin-top: 20px;">
+                <span>Calamity Grade Boss Trials</span>
+                <i class="fa-solid fa-skull" style="color: var(--sukuna-red);"></i>
+            </div>
+
+            <div class="story-card" style="border-color: var(--sukuna-red);">
+                <div class="story-header">
+                    <span class="story-title" style="color: var(--sukuna-red);">Trial of Toji Fushiguro</span>
+                    <span style="font-size: 0.75rem; color: var(--gold);">Unlocks Calamity Weapons</span>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Face the Sorcerer Killer Toji Fushiguro in mortal combat to claim Playful Cloud, Inverted Spear of Heaven, and Split Soul Katana!</div>
+                <div style="margin-top: 8px;">
+                    <a href="toji_boss.html" target="_blank" class="buy-btn" style="border-color: var(--sukuna-red); color: var(--sukuna-red);">
+                        <i class="fa-solid fa-skull"></i> Challenge Toji Boss
+                    </a>
+                </div>
             </div>
         </div>
 
-        <!-- 3. STORY TAB -->
+        <!-- 4. STORY TAB -->
         <div id="tab-story" class="tab-content">
             <div class="section-title">
                 <span>Jujutsu Chronicles (Story Chapters)</span>
@@ -743,6 +824,10 @@
             <i class="fa-solid fa-khanda"></i>
             <span>Combat</span>
         </button>
+        <button class="nav-btn" data-tab="tab-shop">
+            <i class="fa-solid fa-store"></i>
+            <span>Shop</span>
+        </button>
         <button class="nav-btn" data-tab="tab-story">
             <i class="fa-solid fa-scroll"></i>
             <span>Story</span>
@@ -755,29 +840,47 @@
             upg1Level: 0, upg2Level: 0, upg3Level: 0,
             playerHp: 100, playerMaxHp: 100,
             currentEnemy: null, enemyHp: 10, enemyMaxHp: 10,
-            isTurnBusy: false, qteTimer: null, dodgedSuccessfully: false
+            isTurnBusy: false, qteTimer: null, dodgedSuccessfully: false,
+            equippedWeapon: { name: "Bare Fists", bonusDmg: 0, rarity: "common" },
+            shopInventory: []
         };
 
-        const enemyPool = [
-            { name: "Fly Head Curse", grade: "Grade 4", hpMult: 1, atk: 10, ceReward: 10, shardReward: 1, icon: "fa-ghost" },
-            { name: "Roppongi Crawling Curse", grade: "Grade 3", hpMult: 2.5, atk: 18, ceReward: 25, shardReward: 2, icon: "fa-bug" },
-            { name: "Rugby Field Monster", grade: "Grade 2", hpMult: 6, atk: 30, ceReward: 60, shardReward: 5, icon: "fa-spaghetti-monster-flying" },
-            { name: "Grasshopper Curse", grade: "Grade 1", hpMult: 15, atk: 45, ceReward: 150, shardReward: 12, icon: "fa-locust" },
-            { name: "Detention Center Finger Bearer", grade: "Special Grade", hpMult: 40, atk: 70, ceReward: 400, shardReward: 30, icon: "fa-skull-crossbones" },
-            { name: "Mahito (Unregistered)", grade: "Special Grade", hpMult: 100, atk: 110, ceReward: 1000, shardReward: 75, icon: "fa-mask" },
-            { name: "Jogo (Disaster Curse)", grade: "Special Grade", hpMult: 250, atk: 180, ceReward: 2500, shardReward: 200, icon: "fa-fire" }
+        const weaponDatabase = [
+            // Common (10-30 Shards)
+            { name: "Wooden Practice Dagger", rarity: "common", cost: 15, bonusDmg: 5 },
+            { name: "Brass Knuckles", rarity: "common", cost: 25, bonusDmg: 10 },
+            // Uncommon (30-70 Shards)
+            { name: "Slaughter Demon Knife", rarity: "uncommon", cost: 45, bonusDmg: 25 },
+            { name: "Steel Tanto", rarity: "uncommon", cost: 65, bonusDmg: 40 },
+            // Rare (70-500 Shards)
+            { name: "Sorcerer Staff", rarity: "rare", cost: 150, bonusDmg: 100 },
+            { name: "Cursed Katana", rarity: "rare", cost: 350, bonusDmg: 250 },
+            // Epic (500-2500 Shards)
+            { name: "Dragon-Bone Blade", rarity: "epic", cost: 1200, bonusDmg: 800 },
+            { name: "Black Rope Whip", rarity: "epic", cost: 2200, bonusDmg: 1500 },
+            // Legendary (2500-10000 Shards)
+            { name: "Supreme Grade Scythe", rarity: "legendary", cost: 5000, bonusDmg: 4000 },
+            { name: "Executioner's Sword", rarity: "legendary", cost: 9000, bonusDmg: 8500 }
         ];
 
-        // FIXED TAB NAVIGATION
+        const enemyPool = [
+            { name: "Fly Head Curse", grade: "Grade 4", hpMult: 1, atk: 10, ceReward: 10, shardReward: 3, icon: "fa-ghost" },
+            { name: "Roppongi Crawling Curse", grade: "Grade 3", hpMult: 2.5, atk: 18, ceReward: 25, shardReward: 8, icon: "fa-bug" },
+            { name: "Rugby Field Monster", grade: "Grade 2", hpMult: 6, atk: 30, ceReward: 60, shardReward: 20, icon: "fa-spaghetti-monster-flying" },
+            { name: "Grasshopper Curse", grade: "Grade 1", hpMult: 15, atk: 45, ceReward: 150, shardReward: 50, icon: "fa-locust" },
+            { name: "Detention Center Finger Bearer", grade: "Special Grade", hpMult: 40, atk: 70, ceReward: 400, shardReward: 150, icon: "fa-skull-crossbones" },
+            { name: "Mahito (Unregistered)", grade: "Special Grade", hpMult: 100, atk: 110, ceReward: 1000, shardReward: 400, icon: "fa-mask" },
+            { name: "Jogo (Disaster Curse)", grade: "Special Grade", hpMult: 250, atk: 180, ceReward: 2500, shardReward: 1000, icon: "fa-fire" }
+        ];
+
+        // NAV BAR EVENT LISTENERS
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 btn.classList.add('active');
                 const targetTab = document.getElementById(btn.getAttribute('data-tab'));
-                if (targetTab) {
-                    targetTab.classList.add('active');
-                }
+                if (targetTab) targetTab.classList.add('active');
             });
         });
 
@@ -819,6 +922,53 @@
                 warningEl.style.display = "none";
             }
         }
+
+        function refreshShopInventory() {
+            const shuffled = [...weaponDatabase].sort(() => 0.5 - Math.random());
+            state.shopInventory = shuffled.slice(0, 4);
+            renderShop();
+        }
+
+        function renderShop() {
+            const container = document.getElementById('shop-items-list');
+            container.innerHTML = '';
+
+            state.shopInventory.forEach((wpn, idx) => {
+                const card = document.createElement('div');
+                card.className = `weapon-card rarity-${wpn.rarity}`;
+                card.innerHTML = `
+                    <div>
+                        <strong style="font-size:0.95rem;">${wpn.name}</strong>
+                        <div style="font-size:0.75rem; color: var(--text-muted);">+${wpn.bonusDmg} Base Damage (${wpn.rarity.toUpperCase()})</div>
+                    </div>
+                    <button class="buy-btn" onclick="buyWeapon(${idx})">Buy: ${wpn.cost} Shards</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.buyWeapon = function(idx) {
+            const wpn = state.shopInventory[idx];
+            if (state.shards >= wpn.cost) {
+                state.shards -= wpn.cost;
+                state.equippedWeapon = wpn;
+                document.getElementById('equipped-name').innerText = `${wpn.name} (+${wpn.bonusDmg} DMG)`;
+                updateUI();
+                alert(`Equipped ${wpn.name}!`);
+            } else {
+                alert("Not enough Soul Shards!");
+            }
+        };
+
+        document.getElementById('refresh-shop-btn').addEventListener('click', () => {
+            if (state.shards >= 10) {
+                state.shards -= 10;
+                refreshShopInventory();
+                updateUI();
+            } else {
+                alert("Requires 10 Soul Shards to refresh!");
+            }
+        });
 
         function updateUI() {
             document.getElementById('ce-val').innerText = formatNum(state.ce);
@@ -912,7 +1062,8 @@
             if (restoresCe) state.ce += restoresCe;
 
             const isCrit = Math.random() < state.critChance;
-            let dmg = state.power * state.multiplier * multiplier;
+            let baseAtk = (state.power * state.multiplier) + state.equippedWeapon.bonusDmg;
+            let dmg = baseAtk * multiplier;
 
             if (isCrit) {
                 dmg *= 2.5;
@@ -983,6 +1134,7 @@
         }, 1000);
 
         spawnRandomEnemy();
+        refreshShopInventory();
         updateUI();
     </script>
 </body>
