@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boss Trial: Toji Fushiguro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background-color: #050508;
+            color: #ffffff;
+            font-family: 'Rajdhani', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .vn-container {
+            width: 100%;
+            max-width: 900px;
+            height: 100vh;
+            max-height: 600px;
+            background: #000;
+            border: 2px solid #ff2a5f;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 42, 95, 0.4);
+        }
+
+        .vn-bg {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/ba276707-fe1d-417c-aa5c-af799ca32d89/dgczncp-ea1fe9ce-3793-4a52-91d5-86c7a2d3faad.png/v1/fill/w_1192,h_670,q_70,strp/jjk_background_school_grounds_by_backgroundsacademia_dgczncp-pre.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTA4MCIsInBhdGgiOiIvZi9iYTI3NjcwNy1mZTFkLTQxN2MtYWE1Yy1hZjc5OWNhMzJkODkvZGdjem5jcC1lYTFmZTljZS0zNzkzLTRhNTItOTFkNS04NmM3YTJkM2ZhYWQucG5nIiwid2lkdGgiOiI8PTE5MjAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.mq9S-UUKRkuEVB0yk6HeV8Cb-mcQiSx2yeGBex0bRlQ');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.45;
+            filter: brightness(0.5) contrast(1.2);
+            z-index: 1;
+        }
+
+        .sprite-container {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 75%;
+            z-index: 2;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .character-sprite {
+            max-height: 100%;
+            max-width: 450px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 20px rgba(255, 42, 95, 0.6));
+            transition: opacity 0.2s ease;
+        }
+
+        .boss-ui {
+            position: absolute;
+            top: 20px;
+            left: 20px; right: 20px;
+            z-index: 20;
+            background: rgba(10, 12, 22, 0.9);
+            border: 1px solid #ff2a5f;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .hp-bar-container {
+            width: 100%;
+            height: 16px;
+            background: #1a1a20;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .hp-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff2a5f, #a8002a);
+            width: 100%;
+            transition: width 0.15s ease;
+        }
+
+        .hp-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .dialogue-box {
+            position: relative;
+            z-index: 10;
+            width: 92%;
+            margin: 0 auto 20px auto;
+            background: rgba(10, 12, 22, 0.94);
+            border: 2px solid #ff2a5f;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 110px;
+            box-shadow: 0 4px 25px rgba(255, 42, 95, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .name-tag {
+            position: absolute;
+            top: -18px;
+            left: 20px;
+            background: linear-gradient(90deg, #ff2a5f 0%, #a8002a 100%);
+            color: #fff;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 4px 18px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .boss-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .atk-btn {
+            background: rgba(255, 42, 95, 0.15);
+            border: 1px solid #ff2a5f;
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .atk-btn:hover:not(:disabled) {
+            background: #ff2a5f;
+            color: #000;
+        }
+
+        .atk-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .back-btn {
+            position: absolute;
+            top: 15px; right: 15px;
+            z-index: 30;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #3f3f46;
+            color: #a1a1aa;
+            padding: 8px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .qte-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 100;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .dodge-btn {
+            background: #00d2ff;
+            color: #000;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="vn-container">
+        <a href="index.html" class="back-btn"><i class="fa-solid fa-xmark"></i> Leave Trial</a>
+        <div class="vn-bg"></div>
+
+        <div class="qte-overlay" id="qte-overlay">
+            <h2 style="color:#ff2a5f; font-family:'Cinzel', serif;">TOJI ATTACKING!</h2>
+            <button class="dodge-btn" id="dodge-btn">CLICK TO DODGE!</button>
+        </div>
+
+        <div class="boss-ui">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="color:#ff2a5f; font-family:'Cinzel', serif;">Toji Fushiguro (Calamity Boss)</strong>
+                <span id="player-hp-display" style="color:#10b981; font-weight:700;">Yuji HP: 100 / 100</span>
+            </div>
+            <div class="hp-bar-container">
+                <div class="hp-bar-fill" id="boss-hp-fill"></div>
+                <div class="hp-text" id="boss-hp-text">1,000 / 1,000 HP</div>
+            </div>
+        </div>
+
+        <div class="sprite-container">
+            <img id="toji-sprite" class="character-sprite" src="https://static.wikia.nocookie.net/dbxfanon/images/6/6c/Toji.png/revision/latest?cb=20250223022424" alt="Toji">
+        </div>
+
+        <div class="dialogue-box">
+            <div class="name-tag">Toji Fushiguro</div>
+            <div id="dialogue-text" style="font-size:1.05rem; font-weight:600; color:#f4f4f5;">
+                "You sorcerers are all the same. Show me what you've got, kid."
+            </div>
+            <div class="boss-controls">
+                <button class="atk-btn" id="btn-punch">Punch (50 DMG)</button>
+                <button class="atk-btn" id="btn-divergent">Divergent Fist (120 DMG)</button>
+                <button class="atk-btn" id="btn-blackflash">Black Flash (300 DMG)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SPRITE_IDLE = "https://static.wikia.nocookie.net/dbxfanon/images/6/6c/Toji.png/revision/latest?cb=20250223022424";
+        const SPRITE_ATK = "https://static.wikia.nocookie.net/villains/images/b/be/Toji_Fushiguro_Infobox.png/revision/latest?cb=20251009152249";
+
+        let bossHp = 1000;
+        let bossMaxHp = 1000;
+        let playerHp = 100;
+        let isBusy = false;
+        let qteTimer = null;
+
+        const spriteEl = document.getElementById('toji-sprite');
+        const dialogueEl = document.getElementById('dialogue-text');
+        const qteOverlay = document.getElementById('qte-overlay');
+
+        function updateUI() {
+            const hpPct = Math.max(0, (bossHp / bossMaxHp) * 100);
+            document.getElementById('boss-hp-fill').style.width = `${hpPct}%`;
+            document.getElementById('boss-hp-text').innerText = `${Math.max(0, bossHp)} / ${bossMaxHp} HP`;
+            document.getElementById('player-hp-display').innerText = `Yuji HP: ${Math.max(0, playerHp)} / 100`;
+
+            document.getElementById('btn-punch').disabled = isBusy;
+            document.getElementById('btn-divergent').disabled = isBusy;
+            document.getElementById('btn-blackflash').disabled = isBusy;
+        }
+
+        function playerAttack(dmg, moveName) {
+            if (isBusy) return;
+            isBusy = true;
+
+            bossHp -= dmg;
+            dialogueEl.innerText = `You hit Toji with ${moveName} for ${dmg} DMG!`;
+            updateUI();
+
+            if (bossHp <= 0) {
+                alert("CONGRATULATIONS! You defeated Toji Fushiguro!\nUnlocked Calamity Grade Weapons in Armory Shop!");
+                window.location.href = "index.html";
+            } else {
+                setTimeout(() => tojiCounterAttack(), 800);
+            }
+        }
+
+        function tojiCounterAttack() {
+            spriteEl.src = SPRITE_ATK;
+            qteOverlay.style.display = "flex";
+
+            let dodged = false;
+            qteTimer = setTimeout(() => {
+                qteOverlay.style.display = "none";
+                spriteEl.src = SPRITE_IDLE;
+
+                if (!dodged) {
+                    playerHp -= 35;
+                    dialogueEl.innerText = "Toji struck you with Inverse Spear of Heaven! (-35 HP)";
+                    if (playerHp <= 0) {
+                        alert("Toji defeated you! Recovering...");
+                        playerHp = 100;
+                    }
+                }
+                isBusy = false;
+                updateUI();
+            }, 1100);
+
+            document.getElementById('dodge-btn').onclick = () => {
+                dodged = true;
+                clearTimeout(qteTimer);
+                qteOverlay.style.display = "none";
+                spriteEl.src = SPRITE_IDLE;
+                dialogueEl.innerText = "You dodged Toji's lethal slash!";
+                isBusy = false;
+                updateUI();
+            };
+        }
+
+        document.getElementById('btn-punch').addEventListener('click', () => playerAttack(50, "Normal Punch"));
+        document.getElementById('btn-divergent').addEventListener('click', () => playerAttack(120, "Divergent Fist"));
+        document.getElementById('btn-blackflash').addEventListener('click', () => playerAttack(300, "BLACK FLASH"));
+
+        updateUI();
+    </script>
+</body>
+</html>
