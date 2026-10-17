@@ -41,7 +41,6 @@
                 radial-gradient(circle at 50% 100%, rgba(255, 42, 95, 0.05) 0%, transparent 60%);
         }
 
-        /* Top Bar - Player Stats */
         header {
             background: rgba(18, 18, 22, 0.95);
             backdrop-filter: blur(10px);
@@ -107,7 +106,6 @@
             font-weight: 700;
         }
 
-        /* Main Container & Tabs */
         main {
             flex: 1;
             overflow-y: auto;
@@ -132,7 +130,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- TRAINING TAB --- */
+        /* TRAINING TAB */
         .strike-zone {
             display: flex;
             flex-direction: column;
@@ -247,7 +245,7 @@
             color: #888;
         }
 
-        /* --- COMBAT TAB --- */
+        /* COMBAT TAB */
         .grade-warning {
             display: none;
             background: linear-gradient(90deg, #ff2a5f 0%, #72001c 100%);
@@ -297,7 +295,6 @@
             box-shadow: 0 0 15px var(--sukuna-glow);
         }
 
-        /* QTE Dodge Popup Overlay */
         .qte-overlay {
             display: none;
             position: absolute;
@@ -339,7 +336,6 @@
             to { transform: scale(1.05); }
         }
 
-        /* Bars in Combat */
         .bar-wrapper {
             width: 100%;
             display: flex;
@@ -396,7 +392,6 @@
             text-shadow: 0 0 4px #000;
         }
 
-        /* Moves Grid */
         .moves-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -438,7 +433,7 @@
             color: var(--ce-blue);
         }
 
-        /* --- STORY TAB --- */
+        /* STORY TAB */
         .story-list {
             display: flex;
             flex-direction: column;
@@ -467,7 +462,7 @@
             color: var(--gold);
         }
 
-        /* --- BOTTOM NAVIGATION BAR --- */
+        /* NAVIGATION BAR */
         nav {
             background: rgba(18, 18, 22, 0.98);
             border-top: 1px solid var(--border-color);
@@ -502,7 +497,6 @@
             color: var(--ce-blue);
         }
 
-        /* Floating Damage Text */
         .dmg-text {
             position: absolute;
             font-weight: 800;
@@ -625,14 +619,11 @@
         <!-- 2. COMBAT TAB -->
         <div id="tab-combat" class="tab-content active">
 
-            <!-- High Grade Warning Banner -->
             <div class="grade-warning" id="grade-warning">
                 <i class="fa-solid fa-triangle-exclamation"></i> WARNING: DANGEROUS CURSE DETECTED!
             </div>
 
             <div class="enemy-card">
-
-                <!-- QTE Dodge Overlay -->
                 <div class="qte-overlay" id="qte-overlay">
                     <div class="qte-title"><i class="fa-solid fa-bolt"></i> CURSE ATTACKING!</div>
                     <button class="dodge-qte-btn" id="dodge-btn">CLICK TO DODGE!</button>
@@ -646,7 +637,6 @@
                     <div style="font-size: 0.8rem; color: var(--text-muted);" id="enemy-grade">Grade 4 Curse</div>
                 </div>
 
-                <!-- Yuji's Player HP Bar -->
                 <div class="bar-wrapper">
                     <div class="bar-label" style="color: #10b981;">Yuji's Health</div>
                     <div class="player-hp-container">
@@ -655,7 +645,6 @@
                     </div>
                 </div>
 
-                <!-- Enemy HP Bar -->
                 <div class="bar-wrapper">
                     <div class="bar-label">Enemy Health</div>
                     <div class="hp-bar-container">
@@ -664,7 +653,6 @@
                     </div>
                 </div>
 
-                <!-- Player CE Bar -->
                 <div class="bar-wrapper">
                     <div class="bar-label" style="color: var(--ce-blue);">Yuji's Cursed Energy</div>
                     <div class="ce-bar-container">
@@ -673,7 +661,6 @@
                     </div>
                 </div>
 
-                <!-- Combat Moves -->
                 <div class="moves-grid">
                     <button class="move-btn" id="move-punch">
                         <span>Normal Punch</span>
@@ -777,4 +764,226 @@
             { name: "Rugby Field Monster", grade: "Grade 2", hpMult: 6, atk: 30, ceReward: 60, shardReward: 5, icon: "fa-spaghetti-monster-flying" },
             { name: "Grasshopper Curse", grade: "Grade 1", hpMult: 15, atk: 45, ceReward: 150, shardReward: 12, icon: "fa-locust" },
             { name: "Detention Center Finger Bearer", grade: "Special Grade", hpMult: 40, atk: 70, ceReward: 400, shardReward: 30, icon: "fa-skull-crossbones" },
-            { name: "Mahito (Unregistered)", grade: "Special Grade", hpMult: 1
+            { name: "Mahito (Unregistered)", grade: "Special Grade", hpMult: 100, atk: 110, ceReward: 1000, shardReward: 75, icon: "fa-mask" },
+            { name: "Jogo (Disaster Curse)", grade: "Special Grade", hpMult: 250, atk: 180, ceReward: 2500, shardReward: 200, icon: "fa-fire" }
+        ];
+
+        // FIXED TAB NAVIGATION
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                const targetTab = document.getElementById(btn.getAttribute('data-tab'));
+                if (targetTab) {
+                    targetTab.classList.add('active');
+                }
+            });
+        });
+
+        function formatNum(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+            return Math.floor(num);
+        }
+
+        function createFloatingText(text, isCrit, event) {
+            const el = document.createElement('div');
+            el.className = `dmg-text ${isCrit ? 'dmg-critical' : 'dmg-normal'}`;
+            el.innerText = text;
+            const x = event ? event.clientX : window.innerWidth / 2;
+            const y = event ? event.clientY : window.innerHeight / 2;
+            el.style.left = `${x - 20}px`;
+            el.style.top = `${y - 20}px`;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 800);
+        }
+
+        const flashOverlay = document.getElementById('flash-overlay');
+        function triggerBlackFlash() {
+            flashOverlay.classList.add('flash-active');
+            setTimeout(() => flashOverlay.classList.remove('flash-active'), 400);
+        }
+
+        function spawnRandomEnemy() {
+            const randIndex = Math.floor(Math.random() * enemyPool.length);
+            state.currentEnemy = enemyPool[randIndex];
+            state.enemyMaxHp = Math.floor(10 * state.currentEnemy.hpMult * (1 + state.fingers * 0.5));
+            state.enemyHp = state.enemyMaxHp;
+
+            const warningEl = document.getElementById('grade-warning');
+            if (state.currentEnemy.grade === "Grade 1" || state.currentEnemy.grade === "Special Grade") {
+                warningEl.style.display = "block";
+                warningEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> WARNING: ${state.currentEnemy.grade.toUpperCase()} CURSE SPOTTED!`;
+            } else {
+                warningEl.style.display = "none";
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('ce-val').innerText = formatNum(state.ce);
+            document.getElementById('power-val').innerText = formatNum(state.power * state.multiplier);
+            document.getElementById('shards-val').innerText = formatNum(state.shards);
+            document.getElementById('finger-val').innerText = state.fingers;
+
+            const cost1 = Math.floor(15 * Math.pow(1.5, state.upg1Level));
+            const cost2 = Math.floor(50 * Math.pow(1.6, state.upg2Level));
+            const cost3 = Math.floor(200 * Math.pow(2.0, state.upg3Level));
+
+            document.getElementById('buy-upg-1').innerText = `Cost: ${formatNum(cost1)} CE`;
+            document.getElementById('buy-upg-1').disabled = state.ce < cost1;
+            document.getElementById('buy-upg-2').innerText = `Cost: ${formatNum(cost2)} CE`;
+            document.getElementById('buy-upg-2').disabled = state.ce < cost2;
+            document.getElementById('buy-upg-3').innerText = `Cost: ${formatNum(cost3)} CE`;
+            document.getElementById('buy-upg-3').disabled = state.ce < cost3;
+
+            const prestigeCost = 1000 * Math.pow(2.5, state.fingers);
+            const prestigeBtn = document.getElementById('prestige-btn');
+            prestigeBtn.innerText = state.ce >= prestigeCost ? `Consume (+1 Finger)` : `Req: ${formatNum(prestigeCost)} CE`;
+            prestigeBtn.disabled = state.ce < prestigeCost;
+
+            const playerHpPercent = Math.max(0, (state.playerHp / state.playerMaxHp) * 100);
+            document.getElementById('player-hp-fill').style.width = `${playerHpPercent}%`;
+            document.getElementById('player-hp-text').innerText = `${formatNum(Math.max(0, state.playerHp))} / ${state.playerMaxHp} HP`;
+
+            if (state.currentEnemy) {
+                document.getElementById('enemy-name').innerText = state.currentEnemy.name;
+                document.getElementById('enemy-grade').innerText = state.currentEnemy.grade;
+                document.getElementById('enemy-icon').innerHTML = `<i class="fa-solid ${state.currentEnemy.icon}"></i>`;
+
+                const hpPercent = Math.max(0, (state.enemyHp / state.enemyMaxHp) * 100);
+                document.getElementById('hp-fill').style.width = `${hpPercent}%`;
+                document.getElementById('hp-text').innerText = `${formatNum(Math.max(0, state.enemyHp))} / ${formatNum(state.enemyMaxHp)} HP`;
+            }
+
+            const combatCePercent = Math.min(100, (state.ce / state.maxCe) * 100);
+            document.getElementById('combat-ce-fill').style.width = `${combatCePercent}%`;
+            document.getElementById('combat-ce-text').innerText = `${formatNum(state.ce)} / ${state.maxCe} CE`;
+
+            const busy = state.isTurnBusy;
+            document.getElementById('move-punch').disabled = busy;
+            document.getElementById('move-strike').disabled = busy || state.ce < 20;
+            document.getElementById('move-divergent').disabled = busy || state.ce < 50;
+            document.getElementById('move-manji').disabled = busy || state.ce < 100;
+        }
+
+        document.getElementById('strike-btn').addEventListener('click', (e) => {
+            const isCrit = Math.random() < state.critChance;
+            let gain = state.power * state.multiplier;
+            if (isCrit) {
+                gain *= 2.5;
+                triggerBlackFlash();
+                createFloatingText(`BLACK FLASH! +${formatNum(gain)}`, true, e);
+            } else {
+                createFloatingText(`+${formatNum(gain)}`, false, e);
+            }
+            state.ce += gain;
+            updateUI();
+        });
+
+        document.getElementById('buy-upg-1').addEventListener('click', () => {
+            const cost = Math.floor(15 * Math.pow(1.5, state.upg1Level));
+            if (state.ce >= cost) { state.ce -= cost; state.power += 1; state.upg1Level++; updateUI(); }
+        });
+        document.getElementById('buy-upg-2').addEventListener('click', () => {
+            const cost = Math.floor(50 * Math.pow(1.6, state.upg2Level));
+            if (state.ce >= cost) { state.ce -= cost; state.autoCeRate += 1; state.upg2Level++; updateUI(); }
+        });
+        document.getElementById('buy-upg-3').addEventListener('click', () => {
+            const cost = Math.floor(200 * Math.pow(2.0, state.upg3Level));
+            if (state.ce >= cost) { state.ce -= cost; state.critChance += 0.05; state.upg3Level++; updateUI(); }
+        });
+
+        document.getElementById('prestige-btn').addEventListener('click', () => {
+            const prestigeCost = 1000 * Math.pow(2.5, state.fingers);
+            if (state.ce >= prestigeCost) {
+                state.fingers++;
+                state.multiplier += 0.5;
+                state.ce = 0; state.power = 1; state.upg1Level = 0; state.upg2Level = 0; state.upg3Level = 0; state.autoCeRate = 0;
+                updateUI();
+            }
+        });
+
+        function playerTurn(multiplier, cost, restoresCe, e) {
+            if (state.isTurnBusy || state.ce < cost) return;
+
+            state.isTurnBusy = true;
+            state.ce -= cost;
+            if (restoresCe) state.ce += restoresCe;
+
+            const isCrit = Math.random() < state.critChance;
+            let dmg = state.power * state.multiplier * multiplier;
+
+            if (isCrit) {
+                dmg *= 2.5;
+                triggerBlackFlash();
+                createFloatingText(`BLACK FLASH! ${formatNum(dmg)}`, true, e);
+            } else {
+                createFloatingText(`${formatNum(dmg)}`, false, e);
+            }
+
+            state.enemyHp -= dmg;
+            updateUI();
+
+            if (state.enemyHp <= 0) {
+                state.ce += state.currentEnemy.ceReward;
+                state.shards += state.currentEnemy.shardReward;
+                setTimeout(() => {
+                    spawnRandomEnemy();
+                    state.isTurnBusy = false;
+                    updateUI();
+                }, 500);
+            } else {
+                setTimeout(() => enemyTurn(), 600);
+            }
+        }
+
+        function enemyTurn() {
+            const qteOverlay = document.getElementById('qte-overlay');
+            qteOverlay.style.display = "flex";
+            state.dodgedSuccessfully = false;
+
+            state.qteTimer = setTimeout(() => {
+                qteOverlay.style.display = "none";
+                if (!state.dodgedSuccessfully) {
+                    const enemyAtk = state.currentEnemy.atk;
+                    state.playerHp -= enemyAtk;
+                    createFloatingText(`-${enemyAtk} HP`, true, null);
+
+                    if (state.playerHp <= 0) {
+                        alert("Yuji was knocked out! Recovering health...");
+                        state.playerHp = state.playerMaxHp;
+                    }
+                }
+                state.isTurnBusy = false;
+                updateUI();
+            }, 1200);
+        }
+
+        document.getElementById('dodge-btn').addEventListener('click', (e) => {
+            if (state.qteTimer) {
+                clearTimeout(state.qteTimer);
+                state.qteTimer = null;
+            }
+            state.dodgedSuccessfully = true;
+            document.getElementById('qte-overlay').style.display = "none";
+            createFloatingText("DODGED!", false, e);
+            state.isTurnBusy = false;
+            updateUI();
+        });
+
+        document.getElementById('move-punch').addEventListener('click', (e) => playerTurn(1, 0, 15, e));
+        document.getElementById('move-strike').addEventListener('click', (e) => playerTurn(2.5, 20, 0, e));
+        document.getElementById('move-divergent').addEventListener('click', (e) => playerTurn(5, 50, 0, e));
+        document.getElementById('move-manji').addEventListener('click', (e) => playerTurn(10, 100, 0, e));
+
+        setInterval(() => {
+            if (state.autoCeRate > 0) state.ce += state.autoCeRate * state.multiplier;
+            updateUI();
+        }, 1000);
+
+        spawnRandomEnemy();
+        updateUI();
+    </script>
+</body>
+</html>
