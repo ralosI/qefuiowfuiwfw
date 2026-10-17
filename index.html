@@ -22,12 +22,7 @@
             --text-muted: #a1a1aa;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 
         body {
             background-color: var(--bg-dark);
@@ -550,13 +545,8 @@
             transition: color 0.2s ease;
         }
 
-        .nav-btn i {
-            font-size: 1.1rem;
-        }
-
-        .nav-btn.active {
-            color: var(--ce-blue);
-        }
+        .nav-btn i { font-size: 1.1rem; }
+        .nav-btn.active { color: var(--ce-blue); }
 
         .dmg-text {
             position: absolute;
@@ -748,7 +738,7 @@
             </div>
         </div>
 
-        <!-- 3. SHOP & WEAPON INDEX TAB -->
+        <!-- 3. ARMORY INDEX & SHOP TAB -->
         <div id="tab-shop" class="tab-content">
             <div class="equipped-banner">
                 <div>
@@ -758,16 +748,14 @@
                 <i class="fa-solid fa-shield-halved" style="font-size: 1.5rem; color: var(--ce-blue);"></i>
             </div>
 
-            <!-- OWNED WEAPON INDEX -->
+            <!-- OWNED WEAPON INDEX SECTION -->
             <div class="section-title">
                 <span>Owned Weapon Index</span>
                 <i class="fa-solid fa-book-bookmark" style="color: var(--ce-blue);"></i>
             </div>
-            <div class="index-grid" id="owned-weapons-index">
-                <!-- Owned Weapons dynamically rendered here with "Equip" buttons -->
-            </div>
+            <div class="index-grid" id="owned-weapons-index"></div>
 
-            <!-- SHOP SECTION BELOW INDEX -->
+            <!-- SHOP SECTION -->
             <div class="section-title" style="margin-top: 15px;">
                 <span>Cursed Armory Shop</span>
                 <i class="fa-solid fa-store" style="color: var(--gold);"></i>
@@ -778,10 +766,9 @@
                 <button class="buy-btn" id="refresh-shop-btn">Refresh (10 Shards)</button>
             </div>
 
-            <div class="shop-grid" id="shop-items-list">
-                <!-- Shop items dynamically injected via JS -->
-            </div>
+            <div class="shop-grid" id="shop-items-list"></div>
 
+            <!-- BOSS TRIALS -->
             <div class="section-title" style="margin-top: 15px;">
                 <span>Calamity Grade Boss Trials</span>
                 <i class="fa-solid fa-skull" style="color: var(--sukuna-red);"></i>
@@ -878,6 +865,7 @@
                 { id: "fists", name: "Bare Fists", bonusPower: 0, rarity: "common" }
             ],
             tojiDefeated: false,
+            triggered5f: false, triggered10f: false, triggered15f: false, triggered20f: false,
             shopInventory: []
         };
 
@@ -920,8 +908,10 @@
         function saveGame() {
             localStorage.setItem('jjk_yuji_save', JSON.stringify(state));
             const ind = document.getElementById('save-indicator');
-            ind.style.opacity = "1";
-            setTimeout(() => { ind.style.opacity = "0"; }, 1500);
+            if (ind) {
+                ind.style.opacity = "1";
+                setTimeout(() => { ind.style.opacity = "0"; }, 1500);
+            }
         }
 
         function loadGame() {
@@ -941,6 +931,37 @@
                     }
                 });
             }
+        }
+
+        function checkSukunaMilestones() {
+            if (state.fingers >= 5 && !state.triggered5f) {
+                state.triggered5f = true;
+                saveGame();
+                alert("WARNING: Sukuna's influence reaches 5 Fingers! His malicious impulses are leaking into your mind!");
+                window.location.href = "sukuna_5f.html";
+                return true;
+            }
+            if (state.fingers >= 10 && !state.triggered10f) {
+                state.triggered10f = true;
+                saveGame();
+                alert("CRITICAL WARNING: 10 Sukuna Fingers consumed! Sukuna seeks to break your spirit from within!");
+                window.location.href = "sukuna_10f.html";
+                return true;
+            }
+            if (state.fingers >= 15 && !state.triggered15f) {
+                state.triggered15f = true;
+                saveGame();
+                alert("EXTREME DANGER: 15 Sukuna Fingers consumed! Sukuna takes control to lay waste to Shibuya!");
+                window.location.href = "sukuna_15f.html";
+                return true;
+            }
+            if (state.fingers >= 20 && !state.triggered20f) {
+                state.triggered20f = true;
+                saveGame();
+                alert("THE FINAL VESSEL: 20 Sukuna Fingers consumed! (Final Battle is a Work in Progress!)");
+                return true;
+            }
+            return false;
         }
 
         document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -1000,34 +1021,11 @@
         }
 
         function renderShopAndIndex() {
-            // Render Owned Weapon Index
             const indexContainer = document.getElementById('owned-weapons-index');
-            indexContainer.innerHTML = '';
-
-            state.ownedWeapons.forEach(wpn => {
-                const isEquipped = state.equippedWeapon.id === wpn.id;
-                const card = document.createElement('div');
-                card.className = `weapon-card rarity-${wpn.rarity}`;
-                card.innerHTML = `
-                    <div>
-                        <strong style="font-size:0.95rem;">${wpn.name}</strong>
-                        <div style="font-size:0.75rem; color: var(--text-muted);">+${formatNum(wpn.bonusPower)} Physical Power (${wpn.rarity.toUpperCase()})</div>
-                    </div>
-                    <button class="buy-btn" onclick="equipWeapon('${wpn.id}')" ${isEquipped ? 'disabled' : ''}>
-                        ${isEquipped ? 'Equipped' : 'Equip'}
-                    </button>
-                `;
-                indexContainer.appendChild(card);
-            });
-
-            // Render Shop
-            const shopContainer = document.getElementById('shop-items-list');
-            shopContainer.innerHTML = '';
-
-            if (state.shopInventory.length === 0) {
-                shopContainer.innerHTML = '<div style="font-size:0.85rem; color:var(--text-muted); padding:10px;">All shop weapons purchased!</div>';
-            } else {
-                state.shopInventory.forEach((wpn, idx) => {
+            if (indexContainer) {
+                indexContainer.innerHTML = '';
+                state.ownedWeapons.forEach(wpn => {
+                    const isEquipped = state.equippedWeapon.id === wpn.id;
                     const card = document.createElement('div');
                     card.className = `weapon-card rarity-${wpn.rarity}`;
                     card.innerHTML = `
@@ -1035,14 +1033,37 @@
                             <strong style="font-size:0.95rem;">${wpn.name}</strong>
                             <div style="font-size:0.75rem; color: var(--text-muted);">+${formatNum(wpn.bonusPower)} Physical Power (${wpn.rarity.toUpperCase()})</div>
                         </div>
-                        <button class="buy-btn" onclick="buyWeapon(${idx})">Buy: ${wpn.cost} Shards</button>
+                        <button class="buy-btn" onclick="equipWeapon('${wpn.id}')" ${isEquipped ? 'disabled' : ''}>
+                            ${isEquipped ? 'Equipped' : 'Equip'}
+                        </button>
                     `;
-                    shopContainer.appendChild(card);
+                    indexContainer.appendChild(card);
                 });
             }
 
+            const shopContainer = document.getElementById('shop-items-list');
+            if (shopContainer) {
+                shopContainer.innerHTML = '';
+                if (state.shopInventory.length === 0) {
+                    shopContainer.innerHTML = '<div style="font-size:0.85rem; color:var(--text-muted); padding:10px;">All shop weapons purchased!</div>';
+                } else {
+                    state.shopInventory.forEach((wpn, idx) => {
+                        const card = document.createElement('div');
+                        card.className = `weapon-card rarity-${wpn.rarity}`;
+                        card.innerHTML = `
+                            <div>
+                                <strong style="font-size:0.95rem;">${wpn.name}</strong>
+                                <div style="font-size:0.75rem; color: var(--text-muted);">+${formatNum(wpn.bonusPower)} Physical Power (${wpn.rarity.toUpperCase()})</div>
+                            </div>
+                            <button class="buy-btn" onclick="buyWeapon(${idx})">Buy: ${wpn.cost} Shards</button>
+                        `;
+                        shopContainer.appendChild(card);
+                    });
+                }
+            }
+
             const badge = document.getElementById('toji-status-badge');
-            if (state.tojiDefeated) {
+            if (badge && state.tojiDefeated) {
                 badge.innerText = "CALAMITY WEAPONS UNLOCKED";
                 badge.style.color = "var(--green)";
             }
@@ -1182,6 +1203,7 @@
                 state.ce = 0; state.power = 1; state.upg1Level = 0; state.upg2Level = 0; state.upg3Level = 0; state.autoCeRate = 0;
                 updateUI();
                 saveGame();
+                checkSukunaMilestones();
             }
         });
 
@@ -1269,6 +1291,7 @@
         if (state.shopInventory.length === 0) refreshShopInventory();
         renderShopAndIndex();
         updateUI();
+        checkSukunaMilestones();
     </script>
 </body>
 </html>
