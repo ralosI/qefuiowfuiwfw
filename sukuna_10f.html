@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inner Domain: 10 Finger Sukuna Trial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body { background-color: #050508; color: #fff; font-family: 'Rajdhani', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .vn-container { width: 100%; max-width: 900px; height: 100vh; max-height: 600px; background: #000; border: 2px solid #ff2a5f; position: relative; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; box-shadow: 0 0 30px rgba(255, 42, 95, 0.5); }
+        .vn-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle, rgba(255, 42, 95, 0.3) 0%, rgba(5, 5, 8, 0.98) 85%); z-index: 1; }
+        .boss-ui { position: relative; z-index: 20; padding: 14px; background: rgba(10, 12, 22, 0.9); border-bottom: 1px solid #ff2a5f; display: flex; flex-direction: column; gap: 6px; }
+        .hp-bar-container { width: 100%; height: 16px; background: #1a1a20; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); position: relative; }
+        .hp-bar-fill { height: 100%; background: linear-gradient(90deg, #ff2a5f, #a8002a); width: 100%; transition: width 0.1s linear; }
+        .hp-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.75rem; font-weight: 700; }
+        .arena { position: relative; z-index: 10; flex: 1; overflow: hidden; }
+        .thought-bubble { position: absolute; background: rgba(255, 42, 95, 0.25); border: 2px solid #ff2a5f; color: #fff; padding: 10px 18px; border-radius: 30px; font-weight: 700; cursor: pointer; box-shadow: 0 0 15px rgba(255, 42, 95, 0.6); animation: popIn 0.2s ease-out, fadeOut 1.0s forwards; }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes fadeOut { 0% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+        .dialogue-box { position: relative; z-index: 20; width: 92%; margin: 0 auto 20px auto; background: rgba(10, 12, 22, 0.94); border: 2px solid #ff2a5f; border-radius: 8px; padding: 18px; min-height: 110px; display: flex; flex-direction: column; justify-content: space-between; }
+        .name-tag { position: absolute; top: -16px; left: 20px; background: linear-gradient(90deg, #ff2a5f 0%, #a8002a 100%); color: #fff; font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.85rem; padding: 4px 14px; border-radius: 4px; text-transform: uppercase; }
+        .next-btn { align-self: flex-end; background: #ff2a5f; color: #000; border: none; padding: 6px 16px; border-radius: 4px; font-family: inherit; font-weight: 800; cursor: pointer; }
+        .back-btn { position: absolute; top: 15px; right: 15px; z-index: 30; background: rgba(0,0,0,0.8); border: 1px solid #ff2a5f; color: #ff2a5f; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="vn-container">
+        <button class="back-btn" onclick="window.location.href='index.html'">Return to Main Game</button>
+        <div class="vn-bg"></div>
+
+        <div class="boss-ui">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="color:#ff2a5f; font-family:'Cinzel', serif;">Sukuna's Warning (10 Fingers)</strong>
+                <span style="font-size:0.8rem; color:#a1a1aa;" id="phase-text">Phase 1: Clear Impulsive Thoughts</span>
+            </div>
+            <div class="hp-bar-container">
+                <div class="hp-bar-fill" id="boss-hp-fill"></div>
+                <div class="hp-text" id="boss-hp-text">250,000 / 250,000 HP</div>
+            </div>
+        </div>
+
+        <div class="arena" id="arena"></div>
+
+        <div class="dialogue-box" id="dialogue-box" style="display:none;">
+            <div class="name-tag" id="speaker-name">Ryomen Sukuna</div>
+            <div id="dialogue-text" style="font-size:1.05rem; font-weight:600; color:#f4f4f5;">...</div>
+            <button class="next-btn" id="next-btn">Next <i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+    </div>
+
+    <script>
+        let bossHp = 250000;
+        let bossMaxHp = 250000;
+        let dialogueIndex = 0;
+
+        const dialogueSequence = [
+            { speaker: "Ryomen Sukuna", text: "Brat... you think suppressing these tiny urges makes you in control?" },
+            { speaker: "Yuji Itadori", text: "As long as I'm breathing, I won't let you hurt anyone, Sukuna!" },
+            { speaker: "Ryomen Sukuna", text: "Hahaha! Keep holding onto that foolish hope. Eat 5 more fingers..." },
+            { speaker: "Ryomen Sukuna", text: "When Shibuya bleeds, you will watch in helpless despair as I turn your world into hell!" }
+        ];
+
+        function formatNum(num) { return num >= 1000 ? (num/1000).toFixed(1) + 'k' : Math.floor(num); }
+
+        function updateUI() {
+            const pct = Math.max(0, (bossHp / bossMaxHp) * 100);
+            document.getElementById('boss-hp-fill').style.width = `${pct}%`;
+            document.getElementById('boss-hp-text').innerText = `${formatNum(Math.max(0, bossHp))} / ${formatNum(bossMaxHp)} HP`;
+        }
+
+        const qteInterval = setInterval(() => {
+            if (bossHp <= 0) {
+                clearInterval(qteInterval);
+                startDialoguePhase();
+                return;
+            }
+            const arena = document.getElementById('arena');
+            const bubble = document.createElement('div');
+            bubble.className = 'thought-bubble';
+            bubble.innerText = "SUKUNA WHISPERS...";
+            const x = Math.random() * (arena.clientWidth - 160);
+            const y = Math.random() * (arena.clientHeight - 60);
+            bubble.style.left = `${x}px`;
+            bubble.style.top = `${y}px`;
+
+            bubble.onclick = () => {
+                bossHp -= 25000;
+                bubble.remove();
+                updateUI();
+            };
+
+            arena.appendChild(bubble);
+            setTimeout(() => { if (bubble.parentNode) bubble.remove(); }, 900);
+        }, 350);
+
+        function startDialoguePhase() {
+            document.getElementById('phase-text').innerText = "Phase 2: Sukuna Speaks";
+            document.getElementById('dialogue-box').style.display = "flex";
+            showDialogue();
+        }
+
+        function showDialogue() {
+            const current = dialogueSequence[dialogueIndex];
+            document.getElementById('speaker-name').innerText = current.speaker;
+            document.getElementById('dialogue-text').innerText = `"${current.text}"`;
+        }
+
+        document.getElementById('next-btn').addEventListener('click', () => {
+            dialogueIndex++;
+            if (dialogueIndex < dialogueSequence.length) {
+                showDialogue();
+            } else {
+                alert("CONSCIENCE SUPPRESSED! Sukuna fades back into the darkness...");
+                window.location.href = "index.html";
+            }
+        });
+
+        updateUI();
+    </script>
+</body>
+</html>
